@@ -16,358 +16,888 @@
     11. Risiko (Leiter und Rot/Schwarz, assets/risiko.js)
    ============================================================ */
 
-
 /* ---------- 1. Schriften ------------------------------------
    @font-face lädt die Schriftdateien vom EIGENEN Server.
    font-display:swap = Text sofort mit Ersatzschrift anzeigen,
    bis die richtige Schrift geladen ist (kein "unsichtbarer Text"). */
-@font-face{font-family:"Press Start 2P";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/press-start-2p-latin-400-normal.woff2") format("woff2")}
-@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2")}
-@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:600;font-display:swap;src:url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2")}
-@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:700;font-display:swap;src:url("fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2")}
-@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2")}
-
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/press-start-2p-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
 
 /* ---------- 2. Design-Tokens ---------------------------------
    Alle Farben/Abstände an EINER Stelle. Ändert man hier etwas,
    zieht es sich durch die komplette Seite. var(--name) greift
    überall darauf zu. */
-:root{
+:root {
   /* Flächen */
-  --bg:#07070f;          /* Seitenhintergrund (fast schwarz, leicht blau) */
-  --panel:#111124;       /* Karten & Panels */
-  --panel2:#181834;      /* hellere Panel-Variante (Hover, HUD) */
-  --line:#2b2b52;        /* Rahmenlinien */
+  --bg: #07070f; /* Seitenhintergrund (fast schwarz, leicht blau) */
+  --panel: #111124; /* Karten & Panels */
+  --panel2: #181834; /* hellere Panel-Variante (Hover, HUD) */
+  --line: #2b2b52; /* Rahmenlinien */
 
   /* Text */
-  --txt:#eef0ff;         /* Haupttext */
-  --mut:#9aa0c6;         /* gedämpfter Text */
+  --txt: #eef0ff; /* Haupttext */
+  --mut: #9aa0c6; /* gedämpfter Text */
 
   /* Neon-Akzente – jede Spielkategorie hat ihre Farbe */
-  --pink:#ff2d78;        /* Arcade/Action */
-  --cyan:#00e5ff;        /* Puzzle */
-  --lime:#9dff00;        /* Wörter */
-  --gold:#ffc84d;        /* Glück & Zahlen / Casino */
-  --violet:#b28dff;      /* Bald verfügbar */
+  --pink: #ff2d78; /* Arcade/Action */
+  --cyan: #00e5ff; /* Puzzle */
+  --lime: #9dff00; /* Wörter */
+  --gold: #ffc84d; /* Glück & Zahlen / Casino */
+  --violet: #b28dff; /* Bald verfügbar */
 
   /* Schrift-Stapel */
-  --pixel:"Press Start 2P",monospace;            /* Überschriften, Scores */
-  --sans:"IBM Plex Sans",system-ui,sans-serif;   /* Fließtext */
-  --mono:"IBM Plex Mono",monospace;              /* Zahlen, Tastatur-Hinweise */
+  --pixel: "Press Start 2P", monospace; /* Überschriften, Scores */
+  --sans: "IBM Plex Sans", system-ui, sans-serif; /* Fließtext */
+  --mono: "IBM Plex Mono", monospace; /* Zahlen, Tastatur-Hinweise */
 
   /* Bewegung – zentrale Timing-Werte für ruhige, einheitliche Übergänge */
-  --schnell:.18s cubic-bezier(.4,0,.2,1);
-  --weich:.3s cubic-bezier(.33,1,.68,1);
+  --schnell: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --weich: 0.3s cubic-bezier(0.33, 1, 0.68, 1);
 
   /* Akzentfarbe der aktuellen Seite – Spielseiten überschreiben
      diese Variable per style="--ak:var(--cyan)" am <body>. */
-  --ak:var(--cyan);
+  --ak: var(--cyan);
 }
 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
 
 /* ---------- 3. Grundlayout ----------------------------------- */
-body{
-  margin:0;min-width:320px;min-height:100svh;
-  color:var(--txt);
-  font:16px/1.6 var(--sans);
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100svh;
+  color: var(--txt);
+  font: 16px/1.6 var(--sans);
   background:
     /* zwei weiche Farb-Glows oben links/rechts … */
-    radial-gradient(circle at 12% -5%, color-mix(in srgb,var(--pink) 14%,transparent), transparent 34rem),
-    radial-gradient(circle at 88% 0%, color-mix(in srgb,var(--cyan) 12%,transparent), transparent 30rem),
+    radial-gradient(
+      circle at 12% -5%,
+      color-mix(in srgb, var(--pink) 14%, transparent),
+      transparent 34rem
+    ),
+    radial-gradient(
+      circle at 88% 0%,
+      color-mix(in srgb, var(--cyan) 12%, transparent),
+      transparent 30rem
+    ),
     var(--bg);
   /* Einblendung beim Seitenwechsel (Definition unter Punkt 8) */
-  animation:seite-rein .45s cubic-bezier(.33,1,.68,1) both;
+  animation: seite-rein 0.45s cubic-bezier(0.33, 1, 0.68, 1) both;
 }
 
 /* Dezentes Pixel-Raster über der ganzen Seite. position:fixed +
    pointer-events:none = liegt drüber, stört aber keine Klicks. */
-.raster{
-  position:fixed;inset:0;z-index:-1;pointer-events:none;
+.raster {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image:
-    linear-gradient(#ffffff07 1px,transparent 1px),
-    linear-gradient(90deg,#ffffff07 1px,transparent 1px);
-  background-size:36px 36px;
-  mask-image:linear-gradient(#000 60%,transparent);
+    linear-gradient(#ffffff07 1px, transparent 1px),
+    linear-gradient(90deg, #ffffff07 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(#000 60%, transparent);
 }
 
-a{color:inherit}
-.container{width:min(1120px,calc(100% - 40px));margin:auto}
+a {
+  color: inherit;
+}
+.container {
+  width: min(1120px, calc(100% - 40px));
+  margin: auto;
+}
 
 /* Sprungmarke für Tastatur-Nutzer: unsichtbar, bis sie Fokus bekommt */
-.skip-link{position:absolute;left:-999px;top:8px;background:var(--panel);padding:8px 14px;border-radius:8px;z-index:99}
-.skip-link:focus{left:8px}
-
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 8px;
+  background: var(--panel);
+  padding: 8px 14px;
+  border-radius: 8px;
+  z-index: 99;
+}
+.skip-link:focus {
+  left: 8px;
+}
 
 /* ---------- 4. Kopfzeile / Fußzeile -------------------------- */
-.kopf{
-  position:sticky;top:0;z-index:10;
-  border-bottom:1px solid var(--line);
-  background:color-mix(in srgb,var(--bg) 82%,transparent);
-  backdrop-filter:blur(14px);  /* "Milchglas"-Effekt beim Scrollen */
+.kopf {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(14px); /* "Milchglas"-Effekt beim Scrollen */
 }
-.nav{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.marke{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--pixel);font-size:.72rem;letter-spacing:.02em}
-.marke .logo{
-  display:grid;place-items:center;width:34px;height:34px;border-radius:8px;
-  background:linear-gradient(135deg,var(--pink),var(--cyan));color:#05050c;
-  font-size:.9rem;
-  box-shadow:0 0 14px color-mix(in srgb,var(--cyan) 45%,transparent);
+.nav {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
-.nav-links{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.92rem}
-.nav-links a{color:var(--mut);text-decoration:none;transition:color var(--schnell)}
-.nav-links a:hover,.nav-links a[aria-current="page"]{color:var(--ak)}
+.marke {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font-family: var(--pixel);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+.marke .logo {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--pink), var(--cyan));
+  color: #05050c;
+  font-size: 0.9rem;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--cyan) 45%, transparent);
+}
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: 0.92rem;
+}
+.nav-links a {
+  color: var(--mut);
+  text-decoration: none;
+  transition: color var(--schnell);
+}
+.nav-links a:hover,
+.nav-links a[aria-current="page"] {
+  color: var(--ak);
+}
 
-.fuss{border-top:1px solid var(--line);margin-top:72px}
-.fuss-in{min-height:64px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;font-size:.9rem;color:var(--mut)}
-.fuss a{color:var(--mut);text-decoration:none;transition:color var(--schnell)}
-.fuss a:hover{color:var(--ak)}
-.fuss nav{display:flex;gap:18px}
-
+.fuss {
+  border-top: 1px solid var(--line);
+  margin-top: 72px;
+}
+.fuss-in {
+  min-height: 64px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  font-size: 0.9rem;
+  color: var(--mut);
+}
+.fuss a {
+  color: var(--mut);
+  text-decoration: none;
+  transition: color var(--schnell);
+}
+.fuss a:hover {
+  color: var(--ak);
+}
+.fuss nav {
+  display: flex;
+  gap: 18px;
+}
 
 /* ---------- 5. Hub: Hero + Karten-Raster ---------------------- */
-.hero{padding:72px 0 40px;text-align:center}
-.hero .zeile{color:var(--ak);font-family:var(--pixel);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase}
-.hero h1{
-  margin:18px 0 0;font-family:var(--pixel);font-weight:400;
-  font-size:clamp(1.4rem,5vw,2.6rem);line-height:1.45;
-  text-shadow:0 0 22px color-mix(in srgb,var(--ak) 55%,transparent);
+.hero {
+  padding: 72px 0 40px;
+  text-align: center;
 }
-.hero .intro{max-width:620px;margin:20px auto 0;color:var(--mut);font-size:1.08rem}
+.hero .zeile {
+  color: var(--ak);
+  font-family: var(--pixel);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  margin: 18px 0 0;
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 5vw, 2.6rem);
+  line-height: 1.45;
+  text-shadow: 0 0 22px color-mix(in srgb, var(--ak) 55%, transparent);
+}
+.hero .intro {
+  max-width: 620px;
+  margin: 20px auto 0;
+  color: var(--mut);
+  font-size: 1.08rem;
+}
 
-.kategorie{padding:34px 0 10px}
-.kategorie h2{
-  display:flex;align-items:center;gap:12px;
-  font-family:var(--pixel);font-weight:400;font-size:.9rem;letter-spacing:.04em;
-  color:var(--kat,var(--txt));
+.kategorie {
+  padding: 34px 0 10px;
+}
+.kategorie h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--kat, var(--txt));
 }
 /* kleine Leucht-Raute vor jeder Kategorie-Überschrift */
-.kategorie h2::before{
-  content:"";width:10px;height:10px;rotate:45deg;flex:none;
-  background:var(--kat,var(--txt));
-  box-shadow:0 0 10px var(--kat,var(--txt));
+.kategorie h2::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  rotate: 45deg;
+  flex: none;
+  background: var(--kat, var(--txt));
+  box-shadow: 0 0 10px var(--kat, var(--txt));
 }
 
-.raster-karten{
-  display:grid;gap:18px;margin-top:18px;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+.raster-karten {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 
 /* Spiel-Karte: <a class="karte" style="--kat:var(--pink)"> …
    --kat steuert Rahmen-, Glow- und Icon-Farbe der Karte. */
-.karte{
-  position:relative;display:flex;flex-direction:column;gap:12px;
-  padding:20px;border-radius:14px;text-decoration:none;
-  background:linear-gradient(180deg,var(--panel2),var(--panel));
-  border:1px solid color-mix(in srgb,var(--kat,var(--line)) 35%,var(--line));
-  transition:transform var(--weich),box-shadow var(--weich),border-color var(--weich);
+.karte {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: linear-gradient(180deg, var(--panel2), var(--panel));
+  border: 1px solid color-mix(in srgb, var(--kat, var(--line)) 35%, var(--line));
+  transition:
+    transform var(--weich),
+    box-shadow var(--weich),
+    border-color var(--weich);
 }
-.karte:hover,.karte:focus-visible{
-  transform:translateY(-5px);
-  border-color:var(--kat);
-  box-shadow:0 10px 32px #00000066,0 0 24px color-mix(in srgb,var(--kat) 28%,transparent);
+.karte:hover,
+.karte:focus-visible {
+  transform: translateY(-5px);
+  border-color: var(--kat);
+  box-shadow:
+    0 10px 32px #00000066,
+    0 0 24px color-mix(in srgb, var(--kat) 28%, transparent);
 }
 /* Icon wackelt beim Hover kurz – Keyframes unter Punkt 8 */
-.karte:hover .karte-icon{animation:wackeln .5s ease}
-.karte-icon{width:46px;height:46px;color:var(--kat)}
-.karte-icon svg{width:100%;height:100%;display:block}
-.karte h3{margin:0;font-family:var(--pixel);font-weight:400;font-size:.82rem;line-height:1.5;color:var(--txt)}
-.karte p{margin:0;color:var(--mut);font-size:.92rem;flex:1}
-.karte .meta{display:flex;align-items:center;justify-content:space-between;font-size:.8rem;color:var(--mut)}
-.karte .meta .los{color:var(--kat);font-weight:600;transition:transform var(--schnell)}
-.karte:hover .meta .los{transform:translateX(4px)}
+.karte:hover .karte-icon {
+  animation: wackeln 0.5s ease;
+}
+.karte-icon {
+  width: 46px;
+  height: 46px;
+  color: var(--kat);
+}
+.karte-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.karte h3 {
+  margin: 0;
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--txt);
+}
+.karte p {
+  margin: 0;
+  color: var(--mut);
+  font-size: 0.92rem;
+  flex: 1;
+}
+.karte .meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--mut);
+}
+.karte .meta .los {
+  color: var(--kat);
+  font-weight: 600;
+  transition: transform var(--schnell);
+}
+.karte:hover .meta .los {
+  transform: translateX(4px);
+}
 
 /* "Bald"-Karten: gleiche Optik, aber nicht klickbar + ausgegraut */
-.karte.bald{opacity:.55;pointer-events:none}
-.karte .badge{
-  position:absolute;top:14px;right:14px;
-  font-family:var(--pixel);font-size:.62rem;padding:5px 8px;border-radius:6px;
-  color:var(--kat);border:1px solid color-mix(in srgb,var(--kat) 50%,transparent);
+.karte.bald {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.karte .badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-family: var(--pixel);
+  font-size: 0.62rem;
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: var(--kat);
+  border: 1px solid color-mix(in srgb, var(--kat) 50%, transparent);
 }
 
-.hinweis{
-  margin-top:56px;padding:16px 20px;border-radius:12px;font-size:.92rem;color:var(--mut);
-  background:var(--panel);border:1px solid var(--line);
+.hinweis {
+  margin-top: 56px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  color: var(--mut);
+  background: var(--panel);
+  border: 1px solid var(--line);
 }
-.hinweis strong{color:var(--txt)}
-
+.hinweis strong {
+  color: var(--txt);
+}
 
 /* ---------- 6. Spielseiten ------------------------------------ */
-.spiel-kopf{padding:40px 0 8px;display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px}
-.spiel-kopf h1{
-  margin:0;font-family:var(--pixel);font-weight:400;
-  font-size:clamp(1.1rem,4vw,1.7rem);line-height:1.4;color:var(--ak);
-  text-shadow:0 0 18px color-mix(in srgb,var(--ak) 50%,transparent);
+.spiel-kopf {
+  padding: 40px 0 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
 }
-.spiel-kopf .unterzeile{margin:8px 0 0;color:var(--mut)}
+.spiel-kopf h1 {
+  margin: 0;
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: clamp(1.1rem, 4vw, 1.7rem);
+  line-height: 1.4;
+  color: var(--ak);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--ak) 50%, transparent);
+}
+.spiel-kopf .unterzeile {
+  margin: 8px 0 0;
+  color: var(--mut);
+}
 
 /* HUD = Anzeigen über dem Spielfeld (Punkte, Rekord, Züge …) */
-.hud{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}
-.hud-feld{
-  min-width:108px;padding:10px 16px;border-radius:12px;text-align:center;
-  background:var(--panel);border:1px solid var(--line);
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 18px 0;
 }
-.hud-feld .label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
-.hud-feld .wert{font-family:var(--pixel);font-size:1rem;margin-top:6px;color:var(--ak)}
+.hud-feld {
+  min-width: 108px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.hud-feld .label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mut);
+}
+.hud-feld .wert {
+  font-family: var(--pixel);
+  font-size: 1rem;
+  margin-top: 6px;
+  color: var(--ak);
+}
 
 /* Rahmen um die eigentliche Spielfläche (Canvas oder Grid) */
-.buehne{
-  position:relative;margin:10px 0 26px;padding:16px;border-radius:16px;
-  background:var(--panel);border:1px solid var(--line);
-  box-shadow:inset 0 0 40px #00000055,0 0 36px color-mix(in srgb,var(--ak) 10%,transparent);
+.buehne {
+  position: relative;
+  margin: 10px 0 26px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow:
+    inset 0 0 40px #00000055,
+    0 0 36px color-mix(in srgb, var(--ak) 10%, transparent);
 }
-.buehne canvas{display:block;width:100%;height:auto;border-radius:8px;image-rendering:pixelated}
+.buehne canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
 
 /* Steuerungs-Hinweise unter dem Spielfeld */
-.steuerung{color:var(--mut);font-size:.9rem}
-.steuerung kbd{
-  font-family:var(--mono);font-size:.82rem;color:var(--txt);
-  background:var(--panel2);border:1px solid var(--line);border-bottom-width:2px;
-  border-radius:6px;padding:2px 7px;
+.steuerung {
+  color: var(--mut);
+  font-size: 0.9rem;
+}
+.steuerung kbd {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--txt);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 2px 7px;
 }
 
 /* Abschnitt "Wie funktioniert der Code?" auf jeder Spielseite */
-.lernbox{margin:40px 0}
-.lernbox details{
-  background:var(--panel);border:1px solid var(--line);border-radius:12px;
-  padding:4px 20px;transition:border-color var(--schnell);
+.lernbox {
+  margin: 40px 0;
 }
-.lernbox details[open]{border-color:color-mix(in srgb,var(--ak) 45%,var(--line))}
-.lernbox summary{cursor:pointer;padding:12px 0;font-weight:600;color:var(--ak)}
-.lernbox p,.lernbox li{color:var(--mut);font-size:.95rem}
-.lernbox code{font-family:var(--mono);font-size:.85em;color:var(--txt);background:var(--panel2);padding:1px 6px;border-radius:5px}
-
+.lernbox details {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px 20px;
+  transition: border-color var(--schnell);
+}
+.lernbox details[open] {
+  border-color: color-mix(in srgb, var(--ak) 45%, var(--line));
+}
+.lernbox summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-weight: 600;
+  color: var(--ak);
+}
+.lernbox p,
+.lernbox li {
+  color: var(--mut);
+  font-size: 0.95rem;
+}
+.lernbox code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--txt);
+  background: var(--panel2);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
 
 /* ---------- 7. Bausteine -------------------------------------- */
-.knopf{
-  display:inline-block;padding:12px 20px;border-radius:12px;cursor:pointer;
-  font:600 .95rem var(--sans);text-decoration:none;color:var(--txt);
-  background:var(--panel2);border:1px solid var(--line);
-  transition:transform var(--schnell),box-shadow var(--schnell),border-color var(--schnell);
+.knopf {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font: 600 0.95rem var(--sans);
+  text-decoration: none;
+  color: var(--txt);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  transition:
+    transform var(--schnell),
+    box-shadow var(--schnell),
+    border-color var(--schnell);
 }
-.knopf:hover{transform:translateY(-2px);border-color:var(--ak)}
-.knopf:active{transform:translateY(0) scale(.97)}  /* kurzes "Eindrücken" */
-.knopf.primaer{
-  border:0;color:#05050c;
-  background:linear-gradient(135deg,var(--ak),color-mix(in srgb,var(--ak) 55%,#fff));
+.knopf:hover {
+  transform: translateY(-2px);
+  border-color: var(--ak);
 }
-.knopf.primaer:hover{box-shadow:0 0 22px color-mix(in srgb,var(--ak) 50%,transparent)}
-.knopf:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.knopf:active {
+  transform: translateY(0) scale(0.97);
+} /* kurzes "Eindrücken" */
+.knopf.primaer {
+  border: 0;
+  color: #05050c;
+  background: linear-gradient(135deg, var(--ak), color-mix(in srgb, var(--ak) 55%, #fff));
+}
+.knopf.primaer:hover {
+  box-shadow: 0 0 22px color-mix(in srgb, var(--ak) 50%, transparent);
+}
+.knopf:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
 
 /* Game-Over-/Info-Dialog (natives <dialog>-Element) */
-dialog.spiel-dialog{
-  border:1px solid color-mix(in srgb,var(--ak) 45%,var(--line));border-radius:16px;
-  background:var(--panel);color:var(--txt);
-  padding:28px;max-width:min(92vw,420px);text-align:center;
-  box-shadow:0 0 60px color-mix(in srgb,var(--ak) 25%,transparent);
+dialog.spiel-dialog {
+  border: 1px solid color-mix(in srgb, var(--ak) 45%, var(--line));
+  border-radius: 16px;
+  background: var(--panel);
+  color: var(--txt);
+  padding: 28px;
+  max-width: min(92vw, 420px);
+  text-align: center;
+  box-shadow: 0 0 60px color-mix(in srgb, var(--ak) 25%, transparent);
 }
-dialog.spiel-dialog::backdrop{background:#05050ccc;backdrop-filter:blur(3px)}
-dialog.spiel-dialog[open]{animation:dialog-rein .3s cubic-bezier(.33,1,.68,1)}
-dialog.spiel-dialog h2{font-family:var(--pixel);font-weight:400;font-size:1rem;color:var(--ak);margin:0 0 14px;line-height:1.5}
-dialog.spiel-dialog .gross{font-family:var(--pixel);font-size:1.6rem;margin:10px 0}
-dialog.spiel-dialog p{color:var(--mut)}
-dialog.spiel-dialog .aktionen{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+dialog.spiel-dialog::backdrop {
+  background: #05050ccc;
+  backdrop-filter: blur(3px);
+}
+dialog.spiel-dialog[open] {
+  animation: dialog-rein 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+dialog.spiel-dialog h2 {
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--ak);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+dialog.spiel-dialog .gross {
+  font-family: var(--pixel);
+  font-size: 1.6rem;
+  margin: 10px 0;
+}
+dialog.spiel-dialog p {
+  color: var(--mut);
+}
+dialog.spiel-dialog .aktionen {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
 
 /* Frisch eingetragener Platz: nur ein dezenter Akzentrahmen, kein Tamtam */
-.topliste li.neu{border-color:color-mix(in srgb,var(--ak) 55%,var(--line))}
+.topliste li.neu {
+  border-color: color-mix(in srgb, var(--ak) 55%, var(--line));
+}
 /* Unaufdringliche "Eingetragen als …"-Zeile im Game-Over-Dialog */
-.initialen-zeile{color:var(--mut);font-size:.85rem;margin:2px 0 0}
-.initialen.klein{width:5ch;font-size:.8rem;padding:4px 0 4px .3em;margin-left:6px;letter-spacing:.2em}
+.initialen-zeile {
+  color: var(--mut);
+  font-size: 0.85rem;
+  margin: 2px 0 0;
+}
+.initialen.klein {
+  width: 5ch;
+  font-size: 0.8rem;
+  padding: 4px 0 4px 0.3em;
+  margin-left: 6px;
+  letter-spacing: 0.2em;
+}
 
 /* Eingabefeld für Arcade-Initialen (3 Zeichen) */
-.initialen{
-  width:7ch;text-align:center;text-transform:uppercase;
-  font-family:var(--pixel);font-size:1.2rem;letter-spacing:.3em;
-  color:var(--ak);background:var(--panel2);
-  border:1px solid var(--line);border-radius:10px;padding:10px 0 10px .3em;
-  transition:border-color var(--schnell),box-shadow var(--schnell);
+.initialen {
+  width: 7ch;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: var(--pixel);
+  font-size: 1.2rem;
+  letter-spacing: 0.3em;
+  color: var(--ak);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 0 10px 0.3em;
+  transition:
+    border-color var(--schnell),
+    box-shadow var(--schnell);
 }
-.initialen:focus{outline:none;border-color:var(--ak);box-shadow:0 0 14px color-mix(in srgb,var(--ak) 35%,transparent)}
+.initialen:focus {
+  outline: none;
+  border-color: var(--ak);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ak) 35%, transparent);
+}
 
 /* Lokale Top-3-Liste */
-.topliste{margin:0;padding:0;list-style:none}
-.topliste li{
-  display:flex;align-items:center;gap:14px;
-  padding:10px 14px;border-radius:10px;margin-bottom:8px;
-  background:var(--panel2);border:1px solid var(--line);
-  animation:zeile-rein .4s cubic-bezier(.33,1,.68,1) backwards;
+.topliste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.topliste li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  animation: zeile-rein 0.4s cubic-bezier(0.33, 1, 0.68, 1) backwards;
 }
 /* Einträge erscheinen nacheinander (gestaffelte Verzögerung) */
-.topliste li:nth-child(2){animation-delay:.08s}
-.topliste li:nth-child(3){animation-delay:.16s}
-.topliste .platz{font-family:var(--pixel);font-size:.8rem;width:2.2em;color:var(--mut)}
-.topliste li:first-child .platz{color:var(--gold);text-shadow:0 0 10px color-mix(in srgb,var(--gold) 60%,transparent)}
-.topliste .name{font-family:var(--pixel);font-size:.8rem;letter-spacing:.15em}
-.topliste .punkte{margin-left:auto;font-family:var(--mono);color:var(--ak)}
-.topliste .leer{color:var(--mut);font-size:.9rem;border-style:dashed;justify-content:center}
+.topliste li:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.topliste li:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.topliste .platz {
+  font-family: var(--pixel);
+  font-size: 0.8rem;
+  width: 2.2em;
+  color: var(--mut);
+}
+.topliste li:first-child .platz {
+  color: var(--gold);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--gold) 60%, transparent);
+}
+.topliste .name {
+  font-family: var(--pixel);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+}
+.topliste .punkte {
+  margin-left: auto;
+  font-family: var(--mono);
+  color: var(--ak);
+}
+.topliste .leer {
+  color: var(--mut);
+  font-size: 0.9rem;
+  border-style: dashed;
+  justify-content: center;
+}
 
 /* Casino-Bausteine: Einsatz-Chips + Wallet-Leiste ------------- */
 /* Chip-Knöpfe zum Wählen des Einsatzes (10/25/50/100). Der aktive
    Chip bekommt aria-pressed="true" und leuchtet in der Akzentfarbe. */
-.chips{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
-.chip{
-  min-width:64px;padding:10px 14px;border-radius:999px;cursor:pointer;
-  font:600 .95rem var(--mono);color:var(--txt);
-  background:var(--panel2);border:2px dashed var(--line);
-  transition:transform var(--schnell),border-color var(--schnell),box-shadow var(--schnell);
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
 }
-.chip:hover{transform:translateY(-2px)}
-.chip[aria-pressed="true"]{
-  border-style:solid;border-color:var(--ak);color:var(--ak);
-  box-shadow:0 0 14px color-mix(in srgb,var(--ak) 35%,transparent);
+.chip {
+  min-width: 64px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font: 600 0.95rem var(--mono);
+  color: var(--txt);
+  background: var(--panel2);
+  border: 2px dashed var(--line);
+  transition:
+    transform var(--schnell),
+    border-color var(--schnell),
+    box-shadow var(--schnell);
 }
-.chip:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.chip:hover {
+  transform: translateY(-2px);
+}
+.chip[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--ak);
+  color: var(--ak);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ak) 35%, transparent);
+}
+.chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
 /* Gewinn-/Verlust-Einblendung über dem Spielfeld */
-.gewinn-anzeige{font-family:var(--pixel);font-size:1.1rem;text-align:center;min-height:1.6em}
-.gewinn-anzeige.plus{color:var(--lime);text-shadow:0 0 16px color-mix(in srgb,var(--lime) 60%,transparent)}
-.gewinn-anzeige.minus{color:var(--pink)}
+.gewinn-anzeige {
+  font-family: var(--pixel);
+  font-size: 1.1rem;
+  text-align: center;
+  min-height: 1.6em;
+}
+.gewinn-anzeige.plus {
+  color: var(--lime);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--lime) 60%, transparent);
+}
+.gewinn-anzeige.minus {
+  color: var(--pink);
+}
 
 /* Rechtstexte (Impressum / Datenschutz) */
-.rechtlich{padding-top:48px;max-width:760px}
+.rechtlich {
+  padding-top: 48px;
+  max-width: 760px;
+}
 /* Pixelschrift ist sehr breit – Größe an die Bildschirmbreite koppeln
    (clamp) und notfalls Wortumbruch erlauben, sonst sprengt eine lange
    Überschrift wie "Datenschutzerklärung" schmale Handys. */
-.rechtlich h1{font-family:var(--pixel);font-weight:400;font-size:clamp(.92rem,4vw,1.4rem);line-height:1.6;overflow-wrap:anywhere}
-.rechts-block p,.rechts-block a{overflow-wrap:anywhere}
-.rechtlich .intro,.rechts-block p,.rechts-block address,.rechts-block li{color:var(--mut)}
-.rechts-block{margin-top:30px;padding:20px 24px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
-.rechts-block h2{margin-top:0;font-size:1.05rem}
-.rechtlich a{color:var(--cyan)}
-
+.rechtlich h1 {
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: clamp(0.92rem, 4vw, 1.4rem);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.rechts-block p,
+.rechts-block a {
+  overflow-wrap: anywhere;
+}
+.rechtlich .intro,
+.rechts-block p,
+.rechts-block address,
+.rechts-block li {
+  color: var(--mut);
+}
+.rechts-block {
+  margin-top: 30px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.rechts-block h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+.rechtlich a {
+  color: var(--cyan);
+}
 
 /* ---------- 8. Animationen & Übergänge ------------------------ */
 /* Sanfter Übergang zwischen Seiten (View-Transitions-API).
    Browser ohne Unterstützung ignorieren die Regel einfach –
    dann greift nur die Einblend-Animation am <body>. */
-@view-transition{navigation:auto}
+@view-transition {
+  navigation: auto;
+}
 
-@keyframes seite-rein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes dialog-rein{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
-@keyframes zeile-rein{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
-@keyframes wackeln{25%{rotate:-7deg}60%{rotate:6deg}100%{rotate:0deg}}
+@keyframes seite-rein {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes dialog-rein {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes zeile-rein {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes wackeln {
+  25% {
+    rotate: -7deg;
+  }
+  60% {
+    rotate: 6deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
 /* Puls für neue Rekorde – Klasse .rekord-puls per JS setzen */
-@keyframes rekord{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-.rekord-puls{animation:rekord .5s ease 2}
+@keyframes rekord {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+.rekord-puls {
+  animation: rekord 0.5s ease 2;
+}
 /* Kurzes Aufblitzen (z. B. bei Treffern/Gewinn) */
-@keyframes blitz{from{filter:brightness(2.2)}to{filter:none}}
-.blitz{animation:blitz .35s ease}
+@keyframes blitz {
+  from {
+    filter: brightness(2.2);
+  }
+  to {
+    filter: none;
+  }
+}
+.blitz {
+  animation: blitz 0.35s ease;
+}
 /* Schütteln bei Fehleingaben (z. B. unbekanntes Wort) */
-@keyframes schuettel{10%,90%{translate:-2px 0}20%,80%{translate:4px 0}30%,70%{translate:-6px 0}40%,60%{translate:6px 0}50%{translate:-4px 0}}
-.schuettel{animation:schuettel .45s ease}
-
+@keyframes schuettel {
+  10%,
+  90% {
+    translate: -2px 0;
+  }
+  20%,
+  80% {
+    translate: 4px 0;
+  }
+  30%,
+  70% {
+    translate: -6px 0;
+  }
+  40%,
+  60% {
+    translate: 6px 0;
+  }
+  50% {
+    translate: -4px 0;
+  }
+}
+.schuettel {
+  animation: schuettel 0.45s ease;
+}
 
 /* ---------- 9. Barrierefreiheit -------------------------------
    Nutzer mit "Bewegung reduzieren" im Betriebssystem bekommen
    eine ruhige Seite: alle Deko-Animationen und Übergänge aus.
    (Spiele fragen das zusätzlich in JS über UI.bewegungReduziert ab.) */
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
-  html{scroll-behavior:auto}
-  @view-transition{navigation:none}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  @view-transition {
+    navigation: none;
+  }
 }
-
 
 /* ---------- 10. Gewinnfeier ------------------------------------
    Eskalierende Gewinn-Animationen der Casino-Slots (assets/gewinnfeier.js).
@@ -381,146 +911,343 @@ dialog.spiel-dialog .aktionen{display:flex;gap:10px;justify-content:center;margi
    und var(--ak); die Pixel-Schrift ist var(--pixel). */
 
 /* Grundbox: liegt oben in der Bühne und fängt Klicks ab (Klick = überspringen). */
-.gewinnfeier{
-  position:absolute;left:0;top:0;width:100%;
-  z-index:8;                                    /* über allen Spiel-Ebenen der Bühne (bis 6), aber UNTER der Kopfzeile (10) */
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  --gf-y:50%;                                   /* Mitte des Walzenfensters, setzt das Skript */
-  animation:gf-rein .18s ease-out backwards;    /* nur "backwards": ein Endzustand würde das Ausblenden blockieren */
-  transition:opacity .22s ease;
+.gewinnfeier {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 8; /* über allen Spiel-Ebenen der Bühne (bis 6), aber UNTER der Kopfzeile (10) */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  --gf-y: 50%; /* Mitte des Walzenfensters, setzt das Skript */
+  animation: gf-rein 0.18s ease-out backwards; /* nur "backwards": ein Endzustand würde das Ausblenden blockieren */
+  transition: opacity 0.22s ease;
 }
-.gewinnfeier.weg{opacity:0}
-.gewinnfeier.weg-schnell{opacity:0;transition-duration:.12s}
+.gewinnfeier.weg {
+  opacity: 0;
+}
+.gewinnfeier.weg-schnell {
+  opacity: 0;
+  transition-duration: 0.12s;
+}
 
 /* Nur für Screenreader: ein ruhiger Satz statt des tickenden Betrags */
-.gf-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.gf-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* --- Stufe 1: Banner (auch bei "Bewegung reduzieren" für alle Stufen) --- */
 /* Das Band sitzt mittig auf der Oberkante der Bühne (halb drin, halb drüber):
    so verdeckt es die Walzen nicht. */
-.gf-banner{
-  position:absolute;left:50%;top:0;translate:-50% -50%;
-  width:max-content;max-width:calc(100% - 16px);
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;
-  padding:10px 16px;border-radius:12px;text-align:center;
-  font-family:var(--pixel);line-height:1.5;color:#1b1100;
-  background:linear-gradient(135deg,#ffe9a0,var(--gold) 55%,#d8921a);
-  box-shadow:0 4px 0 #8a5a00,0 0 24px color-mix(in srgb,var(--gold) 65%,transparent);
-  animation:gf-banner-rein .32s cubic-bezier(.2,1.5,.4,1) backwards;
+.gf-banner {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  translate: -50% -50%;
+  width: max-content;
+  max-width: calc(100% - 16px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 14px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-family: var(--pixel);
+  line-height: 1.5;
+  color: #1b1100;
+  background: linear-gradient(135deg, #ffe9a0, var(--gold) 55%, #d8921a);
+  box-shadow:
+    0 4px 0 #8a5a00,
+    0 0 24px color-mix(in srgb, var(--gold) 65%, transparent);
+  animation: gf-banner-rein 0.32s cubic-bezier(0.2, 1.5, 0.4, 1) backwards;
 }
 /* Im Banner: dunkle Schrift auf Gold (die Text-Stile unten gelten für das große Overlay) */
-.gf-banner .gf-name{font-size:clamp(.58rem,2.8vw,.74rem);color:#1b1100;text-shadow:none;animation:none}
-.gf-banner .gf-betrag{font-size:clamp(.72rem,3.4vw,.95rem);margin-top:0;color:#1b1100;text-shadow:none}
-.gewinnfeier.reduziert{animation:none}
-.gewinnfeier.reduziert .gf-banner{animation:none}
+.gf-banner .gf-name {
+  font-size: clamp(0.58rem, 2.8vw, 0.74rem);
+  color: #1b1100;
+  text-shadow: none;
+  animation: none;
+}
+.gf-banner .gf-betrag {
+  font-size: clamp(0.72rem, 3.4vw, 0.95rem);
+  margin-top: 0;
+  color: #1b1100;
+  text-shadow: none;
+}
+.gewinnfeier.reduziert {
+  animation: none;
+}
+.gewinnfeier.reduziert .gf-banner {
+  animation: none;
+}
 
 /* --- Stufe 2 und 3: Overlay in der Bühne --- */
-.gewinnfeier.stufe-2,.gewinnfeier.stufe-3{overflow:hidden;border-radius:15px}
-.gewinnfeier.stufe-2{
-  background:radial-gradient(ellipse 85% 75% at 50% var(--gf-y),
-    color-mix(in srgb,var(--gold) 24%,transparent),
-    color-mix(in srgb,var(--bg) 74%,transparent) 78%);
+.gewinnfeier.stufe-2,
+.gewinnfeier.stufe-3 {
+  overflow: hidden;
+  border-radius: 15px;
 }
-.gewinnfeier.stufe-3{
-  background:radial-gradient(ellipse 90% 80% at 50% var(--gf-y),
-    color-mix(in srgb,var(--gold) 30%,transparent),
-    color-mix(in srgb,var(--bg) 88%,transparent) 80%);
+.gewinnfeier.stufe-2 {
+  background: radial-gradient(
+    ellipse 85% 75% at 50% var(--gf-y),
+    color-mix(in srgb, var(--gold) 24%, transparent),
+    color-mix(in srgb, var(--bg) 74%, transparent) 78%
+  );
+}
+.gewinnfeier.stufe-3 {
+  background: radial-gradient(
+    ellipse 90% 80% at 50% var(--gf-y),
+    color-mix(in srgb, var(--gold) 30%, transparent),
+    color-mix(in srgb, var(--bg) 88%, transparent) 80%
+  );
 }
 
 /* Pulsierender Gold-Glow am Innenrand des Overlays */
-.gf-glow{
-  position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:inset 0 0 34px 4px color-mix(in srgb,var(--gold) 45%,transparent);
-  animation:gf-puls 1s ease-in-out infinite alternate;
+.gf-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 34px 4px color-mix(in srgb, var(--gold) 45%, transparent);
+  animation: gf-puls 1s ease-in-out infinite alternate;
 }
-.stufe-3 .gf-glow{
-  box-shadow:inset 0 0 60px 10px color-mix(in srgb,var(--gold) 65%,transparent);
-  animation-duration:.45s;
+.stufe-3 .gf-glow {
+  box-shadow: inset 0 0 60px 10px color-mix(in srgb, var(--gold) 65%, transparent);
+  animation-duration: 0.45s;
 }
 
 /* Stufe 3: langsam kreisende Lichtstrahlen hinter dem Betrag */
-.gf-strahlen{
-  position:absolute;left:50%;top:var(--gf-y);width:230%;aspect-ratio:1;translate:-50% -50%;
-  pointer-events:none;
-  background:repeating-conic-gradient(color-mix(in srgb,var(--gold) 30%,transparent) 0 8deg,transparent 8deg 22deg);
-  -webkit-mask-image:radial-gradient(circle,#000 0,transparent 52%);
-  mask-image:radial-gradient(circle,#000 0,transparent 52%);
-  animation:gf-drehen 16s linear infinite;
+.gf-strahlen {
+  position: absolute;
+  left: 50%;
+  top: var(--gf-y);
+  width: 230%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  pointer-events: none;
+  background: repeating-conic-gradient(
+    color-mix(in srgb, var(--gold) 30%, transparent) 0 8deg,
+    transparent 8deg 22deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 0, transparent 52%);
+  mask-image: radial-gradient(circle, #000 0, transparent 52%);
+  animation: gf-drehen 16s linear infinite;
 }
 
 /* Stufe 3: Canvas der Partikel-Engine füllt das ganze Overlay */
-.gf-partikel{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.gf-partikel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 
 /* Stufe 2: einzelne aufsteigende Funken (--x, --dauer, --verz setzt das Skript zufällig) */
-.gf-funke{
-  position:absolute;left:var(--x);bottom:6%;width:4px;height:4px;pointer-events:none;
-  background:#fff3b0;box-shadow:0 0 8px 2px color-mix(in srgb,var(--gold) 80%,transparent);
-  animation:gf-funke var(--dauer) ease-out var(--verz) infinite backwards;
+.gf-funke {
+  position: absolute;
+  left: var(--x);
+  bottom: 6%;
+  width: 4px;
+  height: 4px;
+  pointer-events: none;
+  background: #fff3b0;
+  box-shadow: 0 0 8px 2px color-mix(in srgb, var(--gold) 80%, transparent);
+  animation: gf-funke var(--dauer) ease-out var(--verz) infinite backwards;
 }
 
 /* Text: Zusatzzeile, Stufen-Name, Betrag, Faktor */
-.gf-inhalt{
-  position:absolute;left:50%;top:var(--gf-y);translate:-50% -50%;
-  width:min(94%,520px);text-align:center;pointer-events:none;
-  font-family:var(--pixel);
+.gf-inhalt {
+  position: absolute;
+  left: 50%;
+  top: var(--gf-y);
+  translate: -50% -50%;
+  width: min(94%, 520px);
+  text-align: center;
+  pointer-events: none;
+  font-family: var(--pixel);
 }
-.gf-zusatz{font-size:clamp(.5rem,2.4vw,.62rem);color:var(--mut);letter-spacing:.12em;margin-bottom:10px}
-.gf-name{
-  font-size:clamp(.8rem,4.4vw,1.5rem);line-height:1.4;color:var(--gold);
-  text-shadow:0 0 16px var(--gold),3px 3px 0 #6e4300;
-  animation:gf-pop .45s cubic-bezier(.2,1.5,.4,1) backwards;
+.gf-zusatz {
+  font-size: clamp(0.5rem, 2.4vw, 0.62rem);
+  color: var(--mut);
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
 }
-.gf-betrag{
-  font-size:clamp(1.25rem,8.4vw,2.7rem);line-height:1.3;margin-top:12px;color:#fff6d0;
-  text-shadow:0 0 18px var(--gold),0 0 4px var(--gold);overflow-wrap:anywhere;
-  font-variant-numeric:tabular-nums;
+.gf-name {
+  font-size: clamp(0.8rem, 4.4vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--gold);
+  text-shadow:
+    0 0 16px var(--gold),
+    3px 3px 0 #6e4300;
+  animation: gf-pop 0.45s cubic-bezier(0.2, 1.5, 0.4, 1) backwards;
 }
-.gf-faktor{margin-top:12px;font:600 .85rem var(--sans);color:var(--txt);text-shadow:0 1px 4px #000,0 0 10px #000}
-.stufe-3 .gf-name{font-size:clamp(1rem,6vw,2rem);animation-duration:.55s}
-.stufe-3 .gf-betrag{font-size:clamp(1.4rem,9.4vw,3.2rem)}
+.gf-betrag {
+  font-size: clamp(1.25rem, 8.4vw, 2.7rem);
+  line-height: 1.3;
+  margin-top: 12px;
+  color: #fff6d0;
+  text-shadow:
+    0 0 18px var(--gold),
+    0 0 4px var(--gold);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.gf-faktor {
+  margin-top: 12px;
+  font: 600 0.85rem var(--sans);
+  color: var(--txt);
+  text-shadow:
+    0 1px 4px #000,
+    0 0 10px #000;
+}
+.stufe-3 .gf-name {
+  font-size: clamp(1rem, 6vw, 2rem);
+  animation-duration: 0.55s;
+}
+.stufe-3 .gf-betrag {
+  font-size: clamp(1.4rem, 9.4vw, 3.2rem);
+}
 /* Ist der Ticker am Ziel, "schlägt" der Endbetrag einmal ein */
-.gewinnfeier.fertig .gf-betrag{animation:gf-knall .5s cubic-bezier(.2,1.6,.4,1)}
-.gf-hinweis{
-  position:absolute;left:0;right:0;bottom:8px;text-align:center;pointer-events:none;
-  font:.72rem var(--sans);color:var(--mut);opacity:.8;
+.gewinnfeier.fertig .gf-betrag {
+  animation: gf-knall 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+.gf-hinweis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  text-align: center;
+  pointer-events: none;
+  font: 0.72rem var(--sans);
+  color: var(--mut);
+  opacity: 0.8;
 }
 
 /* --- Leuchten der Bühne selbst (Klasse am .buehne-Element, nur während der Feier) --- */
 /* Nur die Mitte der Animation ist angegeben; Anfang und Ende sind der normale Zustand der Bühne. */
-@keyframes gf-leuchten-1{
-  35%{border-color:var(--gold);box-shadow:inset 0 0 40px #00000055,0 0 30px 3px color-mix(in srgb,var(--gold) 60%,transparent)}
+@keyframes gf-leuchten-1 {
+  35% {
+    border-color: var(--gold);
+    box-shadow:
+      inset 0 0 40px #00000055,
+      0 0 30px 3px color-mix(in srgb, var(--gold) 60%, transparent);
+  }
 }
-@keyframes gf-leuchten-2{
-  25%,75%{border-color:var(--gold);box-shadow:inset 0 0 40px #00000055,0 0 42px 6px color-mix(in srgb,var(--gold) 70%,transparent)}
-  50%{border-color:color-mix(in srgb,var(--gold) 50%,var(--line));box-shadow:inset 0 0 40px #00000055,0 0 24px color-mix(in srgb,var(--gold) 40%,transparent)}
+@keyframes gf-leuchten-2 {
+  25%,
+  75% {
+    border-color: var(--gold);
+    box-shadow:
+      inset 0 0 40px #00000055,
+      0 0 42px 6px color-mix(in srgb, var(--gold) 70%, transparent);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--gold) 50%, var(--line));
+    box-shadow:
+      inset 0 0 40px #00000055,
+      0 0 24px color-mix(in srgb, var(--gold) 40%, transparent);
+  }
 }
-@keyframes gf-leuchten-3{
-  0%,100%{border-color:var(--gold);box-shadow:inset 0 0 50px color-mix(in srgb,var(--gold) 35%,transparent),0 0 70px 14px color-mix(in srgb,var(--gold) 80%,transparent)}
-  50%{border-color:#fff3b0;box-shadow:inset 0 0 20px #00000055,0 0 26px 2px color-mix(in srgb,var(--gold) 45%,transparent)}
+@keyframes gf-leuchten-3 {
+  0%,
+  100% {
+    border-color: var(--gold);
+    box-shadow:
+      inset 0 0 50px color-mix(in srgb, var(--gold) 35%, transparent),
+      0 0 70px 14px color-mix(in srgb, var(--gold) 80%, transparent);
+  }
+  50% {
+    border-color: #fff3b0;
+    box-shadow:
+      inset 0 0 20px #00000055,
+      0 0 26px 2px color-mix(in srgb, var(--gold) 45%, transparent);
+  }
 }
-.buehne.gf-leuchten-1{animation:gf-leuchten-1 1.2s ease-out}
-.buehne.gf-leuchten-2{animation:gf-leuchten-2 1s ease-in-out 2}
-.buehne.gf-leuchten-3{animation:gf-leuchten-3 .5s ease-in-out infinite}
+.buehne.gf-leuchten-1 {
+  animation: gf-leuchten-1 1.2s ease-out;
+}
+.buehne.gf-leuchten-2 {
+  animation: gf-leuchten-2 1s ease-in-out 2;
+}
+.buehne.gf-leuchten-3 {
+  animation: gf-leuchten-3 0.5s ease-in-out infinite;
+}
 
-@keyframes gf-rein{from{opacity:0}}
-@keyframes gf-banner-rein{from{opacity:0;translate:-50% -140%;scale:.7}}
-@keyframes gf-pop{from{opacity:0;scale:.5}}
-@keyframes gf-knall{0%{scale:1}40%{scale:1.3}100%{scale:1}}
-@keyframes gf-puls{from{opacity:.45}to{opacity:1}}
-@keyframes gf-drehen{to{rotate:360deg}}
-@keyframes gf-funke{
-  from{translate:0 0;opacity:0}
-  15%{opacity:1}
-  to{translate:0 -150px;opacity:0}
+@keyframes gf-rein {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes gf-banner-rein {
+  from {
+    opacity: 0;
+    translate: -50% -140%;
+    scale: 0.7;
+  }
+}
+@keyframes gf-pop {
+  from {
+    opacity: 0;
+    scale: 0.5;
+  }
+}
+@keyframes gf-knall {
+  0% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.3;
+  }
+  100% {
+    scale: 1;
+  }
+}
+@keyframes gf-puls {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes gf-drehen {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes gf-funke {
+  from {
+    translate: 0 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    translate: 0 -150px;
+    opacity: 0;
+  }
 }
 
 /* Bewegung reduzieren: Das Skript baut dann ohnehin nur das statische Banner, und die
    globale Regel in Abschnitt 9 schaltet CSS-Animationen ab. Hier zur Sicherheit noch
    die Dauer-Schleifen und das Bühnen-Leuchten. */
-@media (prefers-reduced-motion:reduce){
-  .gf-glow,.gf-strahlen,.gf-funke,.buehne[class*="gf-leuchten-"]{animation:none}
+@media (prefers-reduced-motion: reduce) {
+  .gf-glow,
+  .gf-strahlen,
+  .gf-funke,
+  .buehne[class*="gf-leuchten-"] {
+    animation: none;
+  }
 }
-
 
 /* ---------- 11. Risiko ------------------------------------------
    Das Risiko-Feature (assets/risiko.js): nach einem Gewinn "Sammeln oder
@@ -534,181 +1261,442 @@ dialog.spiel-dialog .aktionen{display:flex;gap:10px;justify-content:center;margi
    Farben: Gold (var(--gold)) für Gewinn und Aufstieg, Pink (var(--pink)) für
    Gefahr, Null und Absturz. Die Pixel-Schrift ist var(--pixel). */
 
-.risiko{
-  position:absolute;left:0;top:0;width:100%;
-  z-index:9;                                    /* über der Gewinnfeier (8), unter der Kopfzeile (10) */
-  display:grid;place-items:center;padding:12px;
-  border-radius:15px;overflow:auto;
-  background:radial-gradient(ellipse 90% 80% at 50% 50%,
-    color-mix(in srgb,var(--gold) 14%,transparent),
-    color-mix(in srgb,var(--bg) 90%,transparent) 78%);
-  animation:rk-rein .18s ease-out backwards;    /* nur "backwards": ein Endzustand würde das Ausblenden blockieren */
-  transition:opacity .18s ease,background .3s ease;
+.risiko {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 9; /* über der Gewinnfeier (8), unter der Kopfzeile (10) */
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border-radius: 15px;
+  overflow: auto;
+  background: radial-gradient(
+    ellipse 90% 80% at 50% 50%,
+    color-mix(in srgb, var(--gold) 14%, transparent),
+    color-mix(in srgb, var(--bg) 90%, transparent) 78%
+  );
+  animation: rk-rein 0.18s ease-out backwards; /* nur "backwards": ein Endzustand würde das Ausblenden blockieren */
+  transition:
+    opacity 0.18s ease,
+    background 0.3s ease;
 }
-.risiko.weg{opacity:0}
+.risiko.weg {
+  opacity: 0;
+}
 /* Nach einem Absturz färbt sich alles rot */
-.risiko.verloren{
-  background:radial-gradient(ellipse 90% 80% at 50% 50%,
-    color-mix(in srgb,var(--pink) 26%,transparent),
-    color-mix(in srgb,var(--bg) 90%,transparent) 78%);
+.risiko.verloren {
+  background: radial-gradient(
+    ellipse 90% 80% at 50% 50%,
+    color-mix(in srgb, var(--pink) 26%, transparent),
+    color-mix(in srgb, var(--bg) 90%, transparent) 78%
+  );
 }
 
-.rk-panel{
-  width:min(100%,400px);padding:18px 16px 14px;border-radius:16px;text-align:center;
-  background:color-mix(in srgb,var(--panel) 95%,transparent);
-  border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));
-  box-shadow:0 10px 36px #000a,0 0 34px color-mix(in srgb,var(--gold) 22%,transparent);
-  transition:border-color .3s ease,box-shadow .3s ease;
+.rk-panel {
+  width: min(100%, 400px);
+  padding: 18px 16px 14px;
+  border-radius: 16px;
+  text-align: center;
+  background: color-mix(in srgb, var(--panel) 95%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+  box-shadow:
+    0 10px 36px #000a,
+    0 0 34px color-mix(in srgb, var(--gold) 22%, transparent);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
-.rk-panel:focus{outline:none}                   /* nur programmatischer Fokus (tabindex=-1), kein Tab-Stopp */
-.risiko.verloren .rk-panel{
-  border-color:var(--pink);
-  box-shadow:0 10px 36px #000a,0 0 38px color-mix(in srgb,var(--pink) 38%,transparent);
+.rk-panel:focus {
+  outline: none;
+} /* nur programmatischer Fokus (tabindex=-1), kein Tab-Stopp */
+.risiko.verloren .rk-panel {
+  border-color: var(--pink);
+  box-shadow:
+    0 10px 36px #000a,
+    0 0 38px color-mix(in srgb, var(--pink) 38%, transparent);
 }
 
-.rk-kopf{margin:0;font-family:var(--pixel);font-size:.62rem;letter-spacing:.16em;color:var(--mut)}
-.risiko.verloren .rk-kopf{color:var(--pink)}
-.rk-betrag{
-  margin:8px 0 2px;font-family:var(--pixel);font-size:clamp(1.3rem,7vw,2rem);line-height:1.3;
-  color:var(--gold);text-shadow:0 0 16px color-mix(in srgb,var(--gold) 60%,transparent);
-  font-variant-numeric:tabular-nums;overflow-wrap:anywhere;
+.rk-kopf {
+  margin: 0;
+  font-family: var(--pixel);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  color: var(--mut);
 }
-.risiko.verloren .rk-betrag{color:var(--pink);text-shadow:0 0 16px color-mix(in srgb,var(--pink) 60%,transparent)}
-.rk-netto{margin:0;min-height:1.4em;font-size:.82rem;color:var(--mut)}
-.rk-frage{margin:12px 0 10px;font-weight:600}
-.rk-bereich{display:flex;flex-direction:column;align-items:stretch}
-.rk-klein{margin:12px 0 0;font-size:.78rem;line-height:1.45;color:var(--mut)}
+.risiko.verloren .rk-kopf {
+  color: var(--pink);
+}
+.rk-betrag {
+  margin: 8px 0 2px;
+  font-family: var(--pixel);
+  font-size: clamp(1.3rem, 7vw, 2rem);
+  line-height: 1.3;
+  color: var(--gold);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--gold) 60%, transparent);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.risiko.verloren .rk-betrag {
+  color: var(--pink);
+  text-shadow: 0 0 16px color-mix(in srgb, var(--pink) 60%, transparent);
+}
+.rk-netto {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 0.82rem;
+  color: var(--mut);
+}
+.rk-frage {
+  margin: 12px 0 10px;
+  font-weight: 600;
+}
+.rk-bereich {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.rk-klein {
+  margin: 12px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--mut);
+}
 
 /* Knopf-Reihe: auf schmalen Handys umbrechen */
-.rk-aktionen{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
-.rk-aktionen .knopf{flex:1 1 104px;padding:12px 10px}
-.rk-riskieren{
-  border:0;color:#fff;letter-spacing:.04em;
-  background:linear-gradient(135deg,var(--pink),color-mix(in srgb,var(--pink) 55%,#000));
+.rk-aktionen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }
-.rk-riskieren:hover:not(:disabled){box-shadow:0 0 22px color-mix(in srgb,var(--pink) 55%,transparent);border-color:transparent}
+.rk-aktionen .knopf {
+  flex: 1 1 104px;
+  padding: 12px 10px;
+}
+.rk-riskieren {
+  border: 0;
+  color: #fff;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--pink), color-mix(in srgb, var(--pink) 55%, #000));
+}
+.rk-riskieren:hover:not(:disabled) {
+  box-shadow: 0 0 22px color-mix(in srgb, var(--pink) 55%, transparent);
+  border-color: transparent;
+}
 
 /* --- Die Leiter ----------------------------------------------- */
-.rk-leiter{display:flex;flex-direction:column;gap:10px;align-items:stretch}
-.rk-stufen{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
-.rk-stufe,.rk-null{
-  display:grid;grid-template-columns:1.5em 3.2em 1fr;align-items:center;gap:8px;
-  min-height:32px;padding:4px 12px;border-radius:10px;
-  font:.95rem var(--mono);color:var(--mut);
-  background:var(--panel2);border:1px solid var(--line);
-  transition:background .08s linear,border-color .08s linear,box-shadow .08s linear,color .08s linear;
+.rk-leiter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
 }
-.rk-marke{text-align:center;font-family:var(--sans);font-weight:700}
-.rk-faktor{font-family:var(--pixel);font-size:.62rem;text-align:left}
-.rk-wert{text-align:right;font-variant-numeric:tabular-nums}
-.rk-stufe.oben .rk-faktor::after{content:" ★"}
+.rk-stufen {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rk-stufe,
+.rk-null {
+  display: grid;
+  grid-template-columns: 1.5em 3.2em 1fr;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font: 0.95rem var(--mono);
+  color: var(--mut);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  transition:
+    background 0.08s linear,
+    border-color 0.08s linear,
+    box-shadow 0.08s linear,
+    color 0.08s linear;
+}
+.rk-marke {
+  text-align: center;
+  font-family: var(--sans);
+  font-weight: 700;
+}
+.rk-faktor {
+  font-family: var(--pixel);
+  font-size: 0.62rem;
+  text-align: left;
+}
+.rk-wert {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.rk-stufe.oben .rk-faktor::after {
+  content: " ★";
+}
 
 /* geschafft: gedämpftes Grün, der Weg bis hierher */
-.rk-stufe.geschafft{color:var(--lime);border-color:color-mix(in srgb,var(--lime) 30%,var(--line));opacity:.8}
+.rk-stufe.geschafft {
+  color: var(--lime);
+  border-color: color-mix(in srgb, var(--lime) 30%, var(--line));
+  opacity: 0.8;
+}
 /* aktuelle Stufe: leuchtend goldenes Band */
-.rk-stufe.aktuell{
-  color:#1b1100;font-weight:600;border-color:var(--gold);
-  background:linear-gradient(135deg,#ffe9a0,var(--gold) 55%,#d8921a);
-  box-shadow:0 0 18px color-mix(in srgb,var(--gold) 55%,transparent);
+.rk-stufe.aktuell {
+  color: #1b1100;
+  font-weight: 600;
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #ffe9a0, var(--gold) 55%, #d8921a);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--gold) 55%, transparent);
 }
 /* die nächste Stufe und die Null sind dauerhaft markiert (gestrichelt), auch wenn nichts blinkt */
-.rk-stufe.naechste{border:1px dashed var(--gold);color:var(--txt)}
-.rk-null{border:1px dashed color-mix(in srgb,var(--pink) 55%,var(--line));color:var(--mut)}
-.rk-null.scharf{border-color:var(--pink);color:var(--pink)}
-/* DAS FLACKERN: .blink wird im Wechsel auf die nächste Stufe und die Null gesetzt */
-.rk-stufe.blink{
-  border:1px solid var(--gold);color:var(--gold);
-  background:color-mix(in srgb,var(--gold) 28%,var(--panel2));
-  box-shadow:0 0 18px color-mix(in srgb,var(--gold) 60%,transparent);
+.rk-stufe.naechste {
+  border: 1px dashed var(--gold);
+  color: var(--txt);
 }
-.rk-null.blink{
-  border:1px solid var(--pink);color:#fff;
-  background:color-mix(in srgb,var(--pink) 38%,var(--panel2));
-  box-shadow:0 0 18px color-mix(in srgb,var(--pink) 65%,transparent);
+.rk-null {
+  border: 1px dashed color-mix(in srgb, var(--pink) 55%, var(--line));
+  color: var(--mut);
+}
+.rk-null.scharf {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+/* DAS FLACKERN: .blink wird im Wechsel auf die nächste Stufe und die Null gesetzt */
+.rk-stufe.blink {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 28%, var(--panel2));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--gold) 60%, transparent);
+}
+.rk-null.blink {
+  border: 1px solid var(--pink);
+  color: #fff;
+  background: color-mix(in srgb, var(--pink) 38%, var(--panel2));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--pink) 65%, transparent);
 }
 /* gelandet: das Licht ist stehengeblieben */
-.rk-null.getroffen{
-  border:1px solid var(--pink);color:#fff;
-  background:color-mix(in srgb,var(--pink) 55%,var(--panel2));
-  box-shadow:0 0 26px color-mix(in srgb,var(--pink) 75%,transparent);
+.rk-null.getroffen {
+  border: 1px solid var(--pink);
+  color: #fff;
+  background: color-mix(in srgb, var(--pink) 55%, var(--panel2));
+  box-shadow: 0 0 26px color-mix(in srgb, var(--pink) 75%, transparent);
 }
-.rk-stufe.aktuell.getroffen{box-shadow:0 0 28px 2px color-mix(in srgb,var(--gold) 75%,transparent)}
-@keyframes rk-hoch{0%{scale:.94;filter:brightness(1.6)}55%{scale:1.06}100%{scale:1;filter:none}}
-.rk-stufe.neu{animation:rk-hoch .45s cubic-bezier(.2,1.4,.4,1)}
+.rk-stufe.aktuell.getroffen {
+  box-shadow: 0 0 28px 2px color-mix(in srgb, var(--gold) 75%, transparent);
+}
+@keyframes rk-hoch {
+  0% {
+    scale: 0.94;
+    filter: brightness(1.6);
+  }
+  55% {
+    scale: 1.06;
+  }
+  100% {
+    scale: 1;
+    filter: none;
+  }
+}
+.rk-stufe.neu {
+  animation: rk-hoch 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
 /* Absturz: die aktuelle Stufe kippt weg und verblasst */
-@keyframes rk-fall{to{translate:0 36px;rotate:3deg;opacity:.15;filter:grayscale(1)}}
-.rk-stufe.faellt{animation:rk-fall .8s ease-in forwards}
+@keyframes rk-fall {
+  to {
+    translate: 0 36px;
+    rotate: 3deg;
+    opacity: 0.15;
+    filter: grayscale(1);
+  }
+}
+.rk-stufe.faellt {
+  animation: rk-fall 0.8s ease-in forwards;
+}
 
-.rk-info{margin:0;min-height:2.9em;font-size:.88rem;line-height:1.45;color:var(--mut)}
-.rk-leiter.absturz .rk-info{color:var(--pink)}
+.rk-info {
+  margin: 0;
+  min-height: 2.9em;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--mut);
+}
+.rk-leiter.absturz .rk-info {
+  color: var(--pink);
+}
 /* Vorschau (Solo-Spiel vor dem Start): nur die Leiter, ohne Text und Knöpfe */
-.rk-leiter.vorschau .rk-info{display:none}
+.rk-leiter.vorschau .rk-info {
+  display: none;
+}
 
 /* --- Rot/Schwarz: die Karte (Stil wie bei Higher Lower, eigene Klassen) --- */
-.rk-karten{display:flex;flex-direction:column;align-items:center;gap:10px}
-.rk-karte-szene{
-  --kw:clamp(82px,24vw,108px);                   /* Kartenbreite: schrumpft am Handy, wächst am Desktop nur bis 108px */
-  width:var(--kw);aspect-ratio:5/7;perspective:800px;position:relative;
+.rk-karten {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
-.rk-karte{
-  position:relative;width:100%;height:100%;
-  transform-style:preserve-3d;
-  transition:transform .6s cubic-bezier(.33,1,.68,1);
+.rk-karte-szene {
+  --kw: clamp(
+    82px,
+    24vw,
+    108px
+  ); /* Kartenbreite: schrumpft am Handy, wächst am Desktop nur bis 108px */
+  width: var(--kw);
+  aspect-ratio: 5/7;
+  perspective: 800px;
+  position: relative;
 }
-.rk-karte.aufgedeckt{transform:rotateY(180deg)}
-.rk-karte.ohne-uebergang{transition:none}      /* zum Zurückstellen ohne sichtbaren Rückwärts-Flip */
-.rk-flaeche{
-  position:absolute;inset:0;border-radius:calc(var(--kw) * .08);
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+.rk-karte {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
 }
-.rk-flaeche.hinten{
-  background:repeating-linear-gradient(45deg,#1b1b3a 0 7px,#252552 7px 14px);
-  border:2px solid color-mix(in srgb,var(--gold) 55%,var(--line));
-  box-shadow:inset 0 0 0 5px var(--panel),inset 0 0 0 6px color-mix(in srgb,var(--gold) 40%,transparent),0 6px 20px #0008;
+.rk-karte.aufgedeckt {
+  transform: rotateY(180deg);
 }
-.rk-flaeche.hinten::after{
-  content:"?";position:absolute;inset:0;display:grid;place-items:center;
-  font-family:var(--pixel);font-size:calc(var(--kw) * .3);
-  color:var(--gold);text-shadow:0 0 14px color-mix(in srgb,var(--gold) 60%,transparent);
+.rk-karte.ohne-uebergang {
+  transition: none;
+} /* zum Zurückstellen ohne sichtbaren Rückwärts-Flip */
+.rk-flaeche {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--kw) * 0.08);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rk-flaeche.hinten {
+  background: repeating-linear-gradient(45deg, #1b1b3a 0 7px, #252552 7px 14px);
+  border: 2px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+  box-shadow:
+    inset 0 0 0 5px var(--panel),
+    inset 0 0 0 6px color-mix(in srgb, var(--gold) 40%, transparent),
+    0 6px 20px #0008;
+}
+.rk-flaeche.hinten::after {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--pixel);
+  font-size: calc(var(--kw) * 0.3);
+  color: var(--gold);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--gold) 60%, transparent);
 }
 /* Vorderseite ab Werk um 180° gedreht: dreht sich die Karte um 180°, schaut sie uns an */
-.rk-flaeche.vorne{
-  transform:rotateY(180deg);
-  background:linear-gradient(160deg,#f6f6fc,#d3d6ea);
-  color:#14141f;                                 /* Pik, Kreuz */
-  box-shadow:0 6px 20px #0008,0 0 0 3px var(--rk-rand,transparent);
-  transition:box-shadow .3s ease;
+.rk-flaeche.vorne {
+  transform: rotateY(180deg);
+  background: linear-gradient(160deg, #f6f6fc, #d3d6ea);
+  color: #14141f; /* Pik, Kreuz */
+  box-shadow:
+    0 6px 20px #0008,
+    0 0 0 3px var(--rk-rand, transparent);
+  transition: box-shadow 0.3s ease;
 }
-.rk-flaeche.vorne.rot{color:#d1203c}             /* Herz, Karo */
-.rk-ecke{
-  position:absolute;display:flex;flex-direction:column;align-items:center;
-  line-height:1;font-family:var(--sans);font-weight:700;font-size:calc(var(--kw) * .2);
+.rk-flaeche.vorne.rot {
+  color: #d1203c;
+} /* Herz, Karo */
+.rk-ecke {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: calc(var(--kw) * 0.2);
 }
-.rk-ecke.oben{top:5%;left:7%}
-.rk-ecke.unten{bottom:5%;right:7%;transform:rotate(180deg)}   /* steht auf dem Kopf wie bei echten Karten */
-.rk-ecke-symbol{font-size:.85em;margin-top:.1em}
-.rk-mitte{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(var(--kw) * .5);line-height:1}
-.rk-karte-szene.richtig{--rk-rand:var(--lime)}
-.rk-karte-szene.falsch{--rk-rand:var(--pink);animation:schuettel .45s ease}   /* schuettel: aus Abschnitt 8 */
+.rk-ecke.oben {
+  top: 5%;
+  left: 7%;
+}
+.rk-ecke.unten {
+  bottom: 5%;
+  right: 7%;
+  transform: rotate(180deg);
+} /* steht auf dem Kopf wie bei echten Karten */
+.rk-ecke-symbol {
+  font-size: 0.85em;
+  margin-top: 0.1em;
+}
+.rk-mitte {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--kw) * 0.5);
+  line-height: 1;
+}
+.rk-karte-szene.richtig {
+  --rk-rand: var(--lime);
+}
+.rk-karte-szene.falsch {
+  --rk-rand: var(--pink);
+  animation: schuettel 0.45s ease;
+} /* schuettel: aus Abschnitt 8 */
 /* kleine Punkte: Farben der bisherigen Karten */
-.rk-verlauf{display:flex;gap:6px;min-height:12px}
-.rk-verlauf i{width:12px;height:12px;border-radius:50%;border:1px solid var(--line)}
-.rk-verlauf i.rot{background:#d1203c;border-color:#d1203c}
-.rk-verlauf i.schwarz{background:#14141f;border-color:var(--txt)}
-.rk-rot{border:0;color:#fff;background:linear-gradient(135deg,#e0314c,#a8132e)}
-.rk-schwarz{color:var(--txt);background:#0a0a14;border:1px solid var(--txt)}
-.rk-rot:hover:not(:disabled){box-shadow:0 0 20px #e0314c88;border-color:transparent}
-.rk-schwarz:hover:not(:disabled){box-shadow:0 0 18px #ffffff33;border-color:var(--txt)}
+.rk-verlauf {
+  display: flex;
+  gap: 6px;
+  min-height: 12px;
+}
+.rk-verlauf i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+}
+.rk-verlauf i.rot {
+  background: #d1203c;
+  border-color: #d1203c;
+}
+.rk-verlauf i.schwarz {
+  background: #14141f;
+  border-color: var(--txt);
+}
+.rk-rot {
+  border: 0;
+  color: #fff;
+  background: linear-gradient(135deg, #e0314c, #a8132e);
+}
+.rk-schwarz {
+  color: var(--txt);
+  background: #0a0a14;
+  border: 1px solid var(--txt);
+}
+.rk-rot:hover:not(:disabled) {
+  box-shadow: 0 0 20px #e0314c88;
+  border-color: transparent;
+}
+.rk-schwarz:hover:not(:disabled) {
+  box-shadow: 0 0 18px #ffffff33;
+  border-color: var(--txt);
+}
 
-@keyframes rk-rein{from{opacity:0}}
+@keyframes rk-rein {
+  from {
+    opacity: 0;
+  }
+}
 
 /* Bewegung reduzieren: Die globale Regel in Abschnitt 9 schaltet die Animationen ab. Hier
    zusätzlich der Absturz (damit die Stufe stehen bleibt und nur gedämpft wirkt) und der Flip. */
-@media (prefers-reduced-motion:reduce){
-  .rk-stufe.faellt{animation:none;opacity:.35;filter:grayscale(1)}
-  .rk-karte{transition:none}
+@media (prefers-reduced-motion: reduce) {
+  .rk-stufe.faellt {
+    animation: none;
+    opacity: 0.35;
+    filter: grayscale(1);
+  }
+  .rk-karte {
+    transition: none;
+  }
 }
-
 
 /* ---------- 12. Mobil, Gamepad & Spielmodus (assets/mobil.js) ---
    Gilt für die Arcade-Seiten. mobil.js setzt:
@@ -721,181 +1709,471 @@ dialog.spiel-dialog .aktionen{display:flex;gap:10px;justify-content:center;margi
    für Abstände, Tasten und das Ausblenden. */
 
 /* Nur für Screenreader sichtbar (Live-Region) */
-.nur-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.nur-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 /* Texte je nach Eingabegerät */
-html:not(.touch) .nur-touch{display:none}
-html.touch .nur-tastatur{display:none}
+html:not(.touch) .nur-touch {
+  display: none;
+}
+html.touch .nur-tastatur {
+  display: none;
+}
 
 /* Einheitlicher, gut sichtbarer Tastatur-Fokus */
-:where(a,button,summary,.knopf,.karte):focus-visible{outline:2px solid var(--ak);outline-offset:3px;border-radius:6px}
+:where(a, button, summary, .knopf, .karte):focus-visible {
+  outline: 2px solid var(--ak);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
 
 /* Kein Pull-to-Refresh/Scroll-Ketten auf Arcade-Seiten, keine Text-
    auswahl und kein Long-Press-Menü auf Feld und Tasten. */
-html:has(.arcade-buehne){overscroll-behavior-y:none}
-.arcade-buehne,.steuerbereich{
-  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
-  -webkit-tap-highlight-color:transparent;
+html:has(.arcade-buehne) {
+  overscroll-behavior-y: none;
 }
-.arcade-buehne canvas,.gamepad{touch-action:none}
-.werkzeugleiste{touch-action:manipulation}   /* kein Doppeltipp-Zoom */
+.arcade-buehne,
+.steuerbereich {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.arcade-buehne canvas,
+.gamepad {
+  touch-action: none;
+}
+.werkzeugleiste {
+  touch-action: manipulation;
+} /* kein Doppeltipp-Zoom */
 
-.steuerbereich{margin:-14px 0 22px}
+.steuerbereich {
+  margin: -14px 0 22px;
+}
 
 /* --- Gamepad: nur bei Touch sichtbar --- */
-.gamepad{display:none}
-html.touch .gamepad{
-  display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
-  padding:4px 4px 0;
+.gamepad {
+  display: none;
 }
-.gp-gruppe{display:flex;gap:10px}
-html.touch .gamepad.gp-mitte{justify-content:center}
-.gamepad.gp-mitte .gp-gruppe:empty{display:none}
-.gp-reihe{flex-wrap:wrap;justify-content:flex-end;align-items:flex-end}
-.gp-links.gp-reihe{justify-content:flex-start}
-.gp-kreuz{
-  display:grid;gap:6px;
-  grid-template-columns:repeat(3,54px);grid-template-rows:repeat(3,54px);
-  grid-template-areas:". h ." "l . r" ". u .";
+html.touch .gamepad {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 4px 4px 0;
 }
-.gp-kreuz .gp-taste{width:54px;height:54px;font-size:1.15rem}
-.gp-kreuz .gp-hoch{grid-area:h}
-.gp-kreuz .gp-links{grid-area:l}
-.gp-kreuz .gp-rechts{grid-area:r}
-.gp-kreuz .gp-runter{grid-area:u}
-.gp-taste{
-  width:56px;height:56px;padding:0;border-radius:14px;cursor:pointer;
-  display:grid;place-items:center;align-content:center;gap:2px;
-  font:1rem var(--pixel);color:var(--ak);
-  background:color-mix(in srgb,var(--ak) 9%,var(--panel2));
-  border:2px solid color-mix(in srgb,var(--ak) 75%,var(--panel2));   /* ≥ 3:1 gegen den Hintergrund */
-  box-shadow:0 4px 0 #00000066;
-  transition:transform .06s,background-color .06s,box-shadow .06s;
+.gp-gruppe {
+  display: flex;
+  gap: 10px;
 }
-.gp-taste small{font:600 .62rem var(--sans);letter-spacing:.04em;color:var(--txt)}
-.gp-taste.gp-gross{width:76px;height:76px;border-radius:50%;font-size:1.2rem}
-.gp-taste.gp-breit{width:96px}
-.gp-taste.gedrueckt{
-  transform:translateY(3px) scale(.96);
-  background:color-mix(in srgb,var(--ak) 38%,var(--panel2));
-  box-shadow:0 1px 0 #00000066,0 0 18px color-mix(in srgb,var(--ak) 55%,transparent);
+html.touch .gamepad.gp-mitte {
+  justify-content: center;
+}
+.gamepad.gp-mitte .gp-gruppe:empty {
+  display: none;
+}
+.gp-reihe {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.gp-links.gp-reihe {
+  justify-content: flex-start;
+}
+.gp-kreuz {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(3, 54px);
+  grid-template-rows: repeat(3, 54px);
+  grid-template-areas: ". h ." "l . r" ". u .";
+}
+.gp-kreuz .gp-taste {
+  width: 54px;
+  height: 54px;
+  font-size: 1.15rem;
+}
+.gp-kreuz .gp-hoch {
+  grid-area: h;
+}
+.gp-kreuz .gp-links {
+  grid-area: l;
+}
+.gp-kreuz .gp-rechts {
+  grid-area: r;
+}
+.gp-kreuz .gp-runter {
+  grid-area: u;
+}
+.gp-taste {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  font: 1rem var(--pixel);
+  color: var(--ak);
+  background: color-mix(in srgb, var(--ak) 9%, var(--panel2));
+  border: 2px solid color-mix(in srgb, var(--ak) 75%, var(--panel2)); /* ≥ 3:1 gegen den Hintergrund */
+  box-shadow: 0 4px 0 #00000066;
+  transition:
+    transform 0.06s,
+    background-color 0.06s,
+    box-shadow 0.06s;
+}
+.gp-taste small {
+  font: 600 0.62rem var(--sans);
+  letter-spacing: 0.04em;
+  color: var(--txt);
+}
+.gp-taste.gp-gross {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+.gp-taste.gp-breit {
+  width: 96px;
+}
+.gp-taste.gedrueckt {
+  transform: translateY(3px) scale(0.96);
+  background: color-mix(in srgb, var(--ak) 38%, var(--panel2));
+  box-shadow:
+    0 1px 0 #00000066,
+    0 0 18px color-mix(in srgb, var(--ak) 55%, transparent);
 }
 
 /* --- Werkzeugleiste: Pause, Spielmodus, Röhren-Look --- */
-.werkzeugleiste{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px}
-.wz-knopf{
-  min-height:44px;padding:8px 14px;border-radius:10px;cursor:pointer;
-  font:600 .85rem var(--sans);color:var(--mut);
-  background:var(--panel2);border:1px solid var(--line);
-  transition:color var(--schnell),border-color var(--schnell);
+.werkzeugleiste {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
 }
-.wz-knopf:hover{color:var(--txt);border-color:var(--ak)}
-.wz-knopf[aria-pressed="true"]{color:var(--ak);border-color:var(--ak)}
+.wz-knopf {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font: 600 0.85rem var(--sans);
+  color: var(--mut);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  transition:
+    color var(--schnell),
+    border-color var(--schnell);
+}
+.wz-knopf:hover {
+  color: var(--txt);
+  border-color: var(--ak);
+}
+.wz-knopf[aria-pressed="true"] {
+  color: var(--ak);
+  border-color: var(--ak);
+}
 
 /* --- Röhren-Look (CRT): Scanlines + Vignette genau über dem Canvas.
    Position und Größe setzt mobil.js als Variablen (--cx, --cy, --cw, --ch). */
-.arcade-buehne.crt::after{
-  content:"";position:absolute;pointer-events:none;z-index:5;
-  left:var(--cx,16px);top:var(--cy,16px);width:var(--cw,0);height:var(--ch,0);
-  border-radius:8px;
+.arcade-buehne.crt::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  left: var(--cx, 16px);
+  top: var(--cy, 16px);
+  width: var(--cw, 0);
+  height: var(--ch, 0);
+  border-radius: 8px;
   background:
-    repeating-linear-gradient(to bottom,#00000047 0 1px,transparent 1px 3px),
-    radial-gradient(ellipse at center,transparent 58%,#0000008c 100%);
-  box-shadow:inset 0 0 28px #000000aa;
+    repeating-linear-gradient(to bottom, #00000047 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 58%, #0000008c 100%);
+  box-shadow: inset 0 0 28px #000000aa;
 }
-.arcade-buehne.crt canvas{filter:saturate(1.15) contrast(1.06) brightness(1.04)}
+.arcade-buehne.crt canvas {
+  filter: saturate(1.15) contrast(1.06) brightness(1.04);
+}
 
 /* --- Kompaktes Spiel-Layout auf schmalen Bildschirmen --- */
-@media (max-width:700px){
-  .nav{min-height:52px;gap:10px}
-  .nav-links{gap:4px 14px;font-size:.88rem}
-  .spiel-kopf{padding:14px 0 2px}
-  .spiel-kopf h1{font-size:1.05rem}
-  .spiel-kopf .unterzeile{display:none}
-  .hud{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;margin:8px 0}
-  .hud-feld{min-width:0;padding:6px 4px;border-radius:10px}
-  .hud-feld .label{font-size:.62rem;letter-spacing:.04em}
-  .hud-feld .wert{font-size:.82rem;margin-top:3px}
-  .buehne.arcade-buehne{padding:6px;margin:6px 0 14px;border-radius:12px}
-  .steuerbereich{margin-top:-6px}
-  .werkzeugleiste{flex-wrap:nowrap;gap:6px;margin-top:10px}
-  .wz-knopf{padding:8px 10px;font-size:.8rem;white-space:nowrap}
+@media (max-width: 700px) {
+  .nav {
+    min-height: 52px;
+    gap: 10px;
+  }
+  .nav-links {
+    gap: 4px 14px;
+    font-size: 0.88rem;
+  }
+  .spiel-kopf {
+    padding: 14px 0 2px;
+  }
+  .spiel-kopf h1 {
+    font-size: 1.05rem;
+  }
+  .spiel-kopf .unterzeile {
+    display: none;
+  }
+  .hud {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .hud-feld {
+    min-width: 0;
+    padding: 6px 4px;
+    border-radius: 10px;
+  }
+  .hud-feld .label {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
+  .hud-feld .wert {
+    font-size: 0.82rem;
+    margin-top: 3px;
+  }
+  .buehne.arcade-buehne {
+    padding: 6px;
+    margin: 6px 0 14px;
+    border-radius: 12px;
+  }
+  .steuerbereich {
+    margin-top: -6px;
+  }
+  .werkzeugleiste {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .wz-knopf {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
 }
-@media (max-width:560px){
+@media (max-width: 560px) {
   /* Impressum/Datenschutz stehen auch in der Fußzeile: oben weglassen, damit die Navigation einzeilig bleibt */
-  .nav-links a[href$="impressum.html"],.nav-links a[href$="datenschutz.html"]{display:none}
-  .hero{padding:30px 0 14px}
-  .hero h1{font-size:1.25rem}
-  .hero .intro{font-size:.98rem;margin-top:14px}
-  .kategorie{padding:22px 0 4px}
-  .raster-karten{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .karte{padding:14px;gap:8px}
-  .karte-icon{width:34px;height:34px}
-  .karte h3{font-size:.7rem}
-  .karte p{font-size:.84rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-  .karte .meta > span:first-child{display:none}
-  .karte .badge{top:10px;right:10px}
+  .nav-links a[href$="impressum.html"],
+  .nav-links a[href$="datenschutz.html"] {
+    display: none;
+  }
+  .hero {
+    padding: 30px 0 14px;
+  }
+  .hero h1 {
+    font-size: 1.25rem;
+  }
+  .hero .intro {
+    font-size: 0.98rem;
+    margin-top: 14px;
+  }
+  .kategorie {
+    padding: 22px 0 4px;
+  }
+  .raster-karten {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .karte {
+    padding: 14px;
+    gap: 8px;
+  }
+  .karte-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .karte h3 {
+    font-size: 0.7rem;
+  }
+  .karte p {
+    font-size: 0.84rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .karte .meta > span:first-child {
+    display: none;
+  }
+  .karte .badge {
+    top: 10px;
+    right: 10px;
+  }
 }
 
 /* --- Spielmodus: nur HUD, Feld und Steuerung --- */
-body.spielmodus{overflow:hidden}
-body.spielmodus :is(.kopf,.spiel-kopf,.steuerung,main>section,.fuss,.raster,.skip-link,.level-wahl){display:none !important}
-body.spielmodus main{
-  width:100%;max-width:none;
-  padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
+body.spielmodus {
+  overflow: hidden;
 }
-body.spielmodus .hud{margin:0 0 8px}
-body.spielmodus .buehne{margin:0 0 10px}
-body.spielmodus .steuerbereich{margin:0}
-
+body.spielmodus
+  :is(.kopf, .spiel-kopf, .steuerung, main > section, .fuss, .raster, .skip-link, .level-wahl) {
+  display: none !important;
+}
+body.spielmodus main {
+  width: 100%;
+  max-width: none;
+  padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+}
+body.spielmodus .hud {
+  margin: 0 0 8px;
+}
+body.spielmodus .buehne {
+  margin: 0 0 10px;
+}
+body.spielmodus .steuerbereich {
+  margin: 0;
+}
 
 /* ---------- 13. Level-Auswahl (assets/levelwahl.js) ----------- */
-.level-wahl{margin:26px 0 8px}
-.level-wahl h2{font-family:var(--pixel);font-weight:400;font-size:.85rem;margin:0 0 12px}
-.level-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
-.level-knopf{
-  display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:52px;
-  padding:8px 10px;border-radius:10px;cursor:pointer;text-align:left;
-  background:var(--panel2);border:1px solid var(--line);color:var(--txt);
-  transition:border-color var(--schnell),transform var(--schnell);
+.level-wahl {
+  margin: 26px 0 8px;
 }
-.level-knopf:hover:not(:disabled){border-color:var(--ak);transform:translateY(-2px)}
-.level-knopf .lk-nr{font:400 .75rem var(--pixel);color:var(--ak)}
-.level-knopf .lk-name{font:600 .8rem var(--sans);color:var(--mut);line-height:1.25}
-.level-knopf[aria-pressed="true"]{border-color:var(--ak);box-shadow:0 0 14px color-mix(in srgb,var(--ak) 30%,transparent)}
-.level-knopf[aria-pressed="true"] .lk-name{color:var(--txt)}
-.level-knopf.gesperrt{opacity:.5;cursor:not-allowed}
-.level-knopf.gesperrt .lk-name::before{content:"🔒 "}
-.level-info{color:var(--mut);font-size:.88rem;margin:10px 0 0;min-height:1.4em}
-@media (max-width:560px){
-  .level-liste{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .level-knopf{min-height:48px;padding:6px 8px}
+.level-wahl h2 {
+  font-family: var(--pixel);
+  font-weight: 400;
+  font-size: 0.85rem;
+  margin: 0 0 12px;
 }
-
+.level-liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 8px;
+}
+.level-knopf {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 52px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  color: var(--txt);
+  transition:
+    border-color var(--schnell),
+    transform var(--schnell);
+}
+.level-knopf:hover:not(:disabled) {
+  border-color: var(--ak);
+  transform: translateY(-2px);
+}
+.level-knopf .lk-nr {
+  font: 400 0.75rem var(--pixel);
+  color: var(--ak);
+}
+.level-knopf .lk-name {
+  font: 600 0.8rem var(--sans);
+  color: var(--mut);
+  line-height: 1.25;
+}
+.level-knopf[aria-pressed="true"] {
+  border-color: var(--ak);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--ak) 30%, transparent);
+}
+.level-knopf[aria-pressed="true"] .lk-name {
+  color: var(--txt);
+}
+.level-knopf.gesperrt {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.level-knopf.gesperrt .lk-name::before {
+  content: "🔒 ";
+}
+.level-info {
+  color: var(--mut);
+  font-size: 0.88rem;
+  margin: 10px 0 0;
+  min-height: 1.4em;
+}
+@media (max-width: 560px) {
+  .level-liste {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .level-knopf {
+    min-height: 48px;
+    padding: 6px 8px;
+  }
+}
 
 /* ---------- 14. Alters-Hinweis (Casino, simuliertes Glücksspiel) ---------- */
-.alters-hinweis{
-  display:inline-block;margin:10px 0 0;padding:3px 10px;border-radius:999px;
-  font:600 .78rem var(--sans);letter-spacing:.02em;color:var(--gold);
-  border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);
-  background:color-mix(in srgb,var(--gold) 8%,transparent);
+.alters-hinweis {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font: 600 0.78rem var(--sans);
+  letter-spacing: 0.02em;
+  color: var(--gold);
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
 }
-.kategorie h2 .alters-hinweis{font-size:.7rem;vertical-align:middle}
-
+.kategorie h2 .alters-hinweis {
+  font-size: 0.7rem;
+  vertical-align: middle;
+}
 
 /* ---------- 15. Humor: Keks-Hinweis und Game-Over-Sprüche ---------- */
-.keks{
-  position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));z-index:20;
-  translate:-50% 0;width:min(560px,calc(100% - 32px));
-  padding:16px 18px;border-radius:14px;
-  font:16px/1.5 var(--sans);color:var(--txt);   /* liegt außerhalb von <body>, erbt dessen Schrift nicht */
-  background:var(--panel);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));
-  box-shadow:0 12px 40px #000a,0 0 24px color-mix(in srgb,var(--gold) 15%,transparent);
-  animation:dialog-rein .3s cubic-bezier(.33,1,.68,1);transition:opacity .25s,translate .25s;
+.keks {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 20;
+  translate: -50% 0;
+  width: min(560px, calc(100% - 32px));
+  padding: 16px 18px;
+  border-radius: 14px;
+  font: 16px/1.5 var(--sans);
+  color: var(--txt); /* liegt außerhalb von <body>, erbt dessen Schrift nicht */
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line));
+  box-shadow:
+    0 12px 40px #000a,
+    0 0 24px color-mix(in srgb, var(--gold) 15%, transparent);
+  animation: dialog-rein 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+  transition:
+    opacity 0.25s,
+    translate 0.25s;
 }
-.keks.weg{opacity:0;translate:-50% 12px}
-.keks p{margin:0 0 12px;color:var(--mut);font-size:.92rem}
-.keks a{color:var(--cyan)}
-.keks-knoepfe{display:flex;flex-wrap:wrap;gap:8px}
-.keks .knopf{padding:10px 14px;font-size:.85rem;min-height:44px}
-dialog.spiel-dialog .spruch{margin:-2px 0 12px;font-style:italic;color:var(--txt);opacity:.85}
+.keks.weg {
+  opacity: 0;
+  translate: -50% 12px;
+}
+.keks p {
+  margin: 0 0 12px;
+  color: var(--mut);
+  font-size: 0.92rem;
+}
+.keks a {
+  color: var(--cyan);
+}
+.keks-knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.keks .knopf {
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  min-height: 44px;
+}
+dialog.spiel-dialog .spruch {
+  margin: -2px 0 12px;
+  font-style: italic;
+  color: var(--txt);
+  opacity: 0.85;
+}

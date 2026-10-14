@@ -30,17 +30,17 @@ import { bewegungReduziert, toplisteAnzeigen, gameOverDialog } from "./assets/ui
 
 /** Die drei Schwierigkeitsstufen. Schlüssel = Teil des Speicher-Namens. */
 export const STUFEN = {
-  leicht: { name: "Leicht", spalten: 9,  zeilen: 9,  minen: 10 },
+  leicht: { name: "Leicht", spalten: 9, zeilen: 9, minen: 10 },
   mittel: { name: "Mittel", spalten: 16, zeilen: 16, minen: 40 },
   schwer: { name: "Schwer", spalten: 30, zeilen: 16, minen: 99 },
 };
 
-const SPIEL = "minesweeper";           // Speicherbereich für allgemeine Einstellungen (z. B. gewählte Stufe)
-const LANGER_DRUCK_MS = 400;           // so lange Finger halten = Flagge
-const DOPPELKLICK_MS = 350;            // max. Abstand zweier Klicks für "Chording"
-const WELLE_MS_PRO_FELD = 28;          // Verzögerung der Aufdeck-Welle pro Feld Abstand
-const WELLE_MAX_MS = 700;              // Obergrenze, damit große Flächen nicht ewig brauchen
-const MAX_SEKUNDEN = 5999;             // 99:59 – mehr kann "mm:ss" nicht darstellen
+const SPIEL = "minesweeper"; // Speicherbereich für allgemeine Einstellungen (z. B. gewählte Stufe)
+const LANGER_DRUCK_MS = 400; // so lange Finger halten = Flagge
+const DOPPELKLICK_MS = 350; // max. Abstand zweier Klicks für "Chording"
+const WELLE_MS_PRO_FELD = 28; // Verzögerung der Aufdeck-Welle pro Feld Abstand
+const WELLE_MAX_MS = 700; // Obergrenze, damit große Flächen nicht ewig brauchen
+const MAX_SEKUNDEN = 5999; // 99:59 – mehr kann "mm:ss" nicht darstellen
 
 /** Speicher-Schlüssel der Topliste einer Stufe, z. B. "minesweeper-leicht". */
 const toplisteKey = (stufe) => `${SPIEL}-${stufe}`;
@@ -75,12 +75,12 @@ const toplisteKey = (stufe) => `${SPIEL}-${stufe}`;
  * auf das Feld in der Nachbar-ZEILE zeigen (Index "läuft um die Ecke").
  */
 export function nachbarIndizes(index, spalten, zeilen) {
-  const x = index % spalten;               // % = Rest → Spalte
-  const y = Math.floor(index / spalten);   // Ganzzahldivision → Zeile
+  const x = index % spalten; // % = Rest → Spalte
+  const y = Math.floor(index / spalten); // Ganzzahldivision → Zeile
   const liste = [];
   for (let dy = -1; dy <= 1; dy++) {
     for (let dx = -1; dx <= 1; dx++) {
-      if (dx === 0 && dy === 0) continue;  // das Feld selbst ist kein Nachbar
+      if (dx === 0 && dy === 0) continue; // das Feld selbst ist kein Nachbar
       const nx = x + dx;
       const ny = y + dy;
       if (nx < 0 || nx >= spalten || ny < 0 || ny >= zeilen) continue; // außerhalb
@@ -131,8 +131,8 @@ export function minenVerteilen(spalten, zeilen, anzahl, sichererIndex, zufall = 
 
 /** Zählt für JEDES Feld, wie viele Nachbarn eine Mine sind (0–8). */
 export function nachbarZahlenBerechnen(minen, spalten, zeilen) {
-  return minen.map((_, index) =>
-    nachbarIndizes(index, spalten, zeilen).filter((nb) => minen[nb]).length
+  return minen.map(
+    (_, index) => nachbarIndizes(index, spalten, zeilen).filter((nb) => minen[nb]).length,
   );
 }
 
@@ -164,7 +164,7 @@ export function floodFill(start, nachbarZahlen, aufgedeckt, flaggen, spalten, ze
   const ergebnis = [];
 
   while (stapel.length > 0) {
-    const index = stapel.pop();                      // letztes Element nehmen (LIFO)
+    const index = stapel.pop(); // letztes Element nehmen (LIFO)
     if (gesehen[index]) continue;
     gesehen[index] = 1;
     if (aufgedeckt[index] || flaggen[index]) continue; // offen oder geflaggt: überspringen
@@ -207,13 +207,13 @@ export function zeitText(sekunden) {
    komplett neu angelegt. `el` sammelt die DOM-Elemente, die wir oft brauchen.
    ============================================================ */
 
-let z = null;              // Zustand der laufenden Runde
-let stufeKey = "leicht";   // gewählte Schwierigkeit
-const el = {};             // DOM-Elemente (werden in init() gefüllt)
+let z = null; // Zustand der laufenden Runde
+let stufeKey = "leicht"; // gewählte Schwierigkeit
+const el = {}; // DOM-Elemente (werden in init() gefüllt)
 
 // Eingabe-Hilfsvariablen (gehören nicht zur Runde, sondern zur Bedienung)
 let letzterPointerTyp = "mouse"; // "mouse" | "touch" | "pen" – wer hat zuletzt gedrückt?
-let druckTimer = null;           // läuft, solange ein Finger gehalten wird
+let druckTimer = null; // läuft, solange ein Finger gehalten wird
 let langerDruckAusgeloest = false;
 let druckStart = { x: 0, y: 0 };
 let letzterKlick = { index: -1, zeit: 0 }; // für die Doppelklick-Erkennung
@@ -231,8 +231,8 @@ function neuesSpiel() {
   z = {
     stufe: s,
     gesamt,
-    phase: "bereit",           // "bereit" → "laeuft" → "gewonnen" | "verloren"
-    minen: null,               // erst nach dem ersten Klick gefüllt (siehe minenVerteilen)
+    phase: "bereit", // "bereit" → "laeuft" → "gewonnen" | "verloren"
+    minen: null, // erst nach dem ersten Klick gefüllt (siehe minenVerteilen)
     nachbarZahlen: null,
     aufgedeckt: new Array(gesamt).fill(false),
     flaggen: new Array(gesamt).fill(false),
@@ -242,8 +242,8 @@ function neuesSpiel() {
     startZeit: 0,
     timerId: null,
     dialogTimerId: null,
-    fokusIndex: 0,             // welche Zelle ist per Tab erreichbar (siehe "Roving Tabindex")
-    zellen: [],                // die <button>-Elemente, Index = Feldindex
+    fokusIndex: 0, // welche Zelle ist per Tab erreichbar (siehe "Roving Tabindex")
+    zellen: [], // die <button>-Elemente, Index = Feldindex
   };
   feldBauen();
   hudZeichnen();
@@ -262,10 +262,10 @@ function alleTimerStoppen() {
 /** Baut das Raster aus <button>-Zellen. */
 function feldBauen() {
   const s = z.stufe;
-  el.feld.replaceChildren();                       // alte Zellen entfernen
+  el.feld.replaceChildren(); // alte Zellen entfernen
   el.feld.classList.remove("schuettel");
   el.buehne.classList.remove("blitz");
-  el.feld.dataset.stufe = stufeKey;                // CSS wählt danach die Zellgröße
+  el.feld.dataset.stufe = stufeKey; // CSS wählt danach die Zellgröße
   el.feld.style.setProperty("--spalten", String(s.spalten));
 
   // DocumentFragment: erst im Speicher zusammenbauen, dann EINMAL einfügen.
@@ -318,7 +318,7 @@ function zelleZeichnen(i, verzoegerungMs = 0) {
 
   if (offen) {
     const zahl = z.nachbarZahlen[i];
-    knopf.dataset.zahl = String(zahl);           // CSS färbt per [data-zahl="3"]
+    knopf.dataset.zahl = String(zahl); // CSS färbt per [data-zahl="3"]
     knopf.textContent = zahl > 0 ? String(zahl) : ""; // textContent: nie innerHTML
   }
   zelleBeschriften(i);
@@ -420,7 +420,14 @@ function zellenAufdecken(start, ursprung) {
 function chording(index) {
   if (!spielAktiv() || z.phase === "bereit") return;
   const s = z.stufe;
-  const kandidaten = chordingKandidaten(index, z.nachbarZahlen, z.aufgedeckt, z.flaggen, s.spalten, s.zeilen);
+  const kandidaten = chordingKandidaten(
+    index,
+    z.nachbarZahlen,
+    z.aufgedeckt,
+    z.flaggen,
+    s.spalten,
+    s.zeilen,
+  );
   if (kandidaten.length === 0) return;
 
   // Erst alle sicheren aufdecken, dann (falls eine Flagge falsch saß) verlieren.
@@ -455,18 +462,23 @@ function gewonnen() {
   z.phase = "gewonnen";
   timerStoppen();
   // mind. 1 Sekunde: Eine 0-Sekunden-Zeit gäbe es sonst bei einem Glückstreffer-Erstklick
-  z.sekunden = Math.max(1, Math.min(MAX_SEKUNDEN, Math.floor((performance.now() - z.startZeit) / 1000)));
+  z.sekunden = Math.max(
+    1,
+    Math.min(MAX_SEKUNDEN, Math.floor((performance.now() - z.startZeit) / 1000)),
+  );
 
   // Alle Minen automatisch flaggen – Belohnung fürs Auge
   const sichtbarMachen = [];
-  z.minen.forEach((istMine, i) => { if (istMine && !z.flaggen[i]) sichtbarMachen.push(i); });
+  z.minen.forEach((istMine, i) => {
+    if (istMine && !z.flaggen[i]) sichtbarMachen.push(i);
+  });
   sichtbarMachen.forEach((i, reihenfolge) => {
     z.flaggen[i] = true;
     z.anzahlFlaggen++;
     zelleZeichnen(i, bewegungReduziert() ? 0 : Math.min(WELLE_MAX_MS, reihenfolge * 12));
   });
   hudZeichnen();
-  el.buehne.classList.add("blitz");               // kurzes Aufleuchten (CSS, s. style.css)
+  el.buehne.classList.add("blitz"); // kurzes Aufleuchten (CSS, s. style.css)
   statusSagen(`Gewonnen in ${zeitText(z.sekunden)}.`);
 
   // Kurz warten, damit man das gelöste Feld noch sieht, dann der gemeinsame Dialog.
@@ -478,8 +490,8 @@ function gewonnen() {
       titel: "GEWONNEN!",
       punkte: sekunden,
       punkteText: zeitText(sekunden),
-      richtung: "runter",            // kürzere Zeit = besser
-      format: zeitText,              // Topliste im Dialog als mm:ss anzeigen
+      richtung: "runter", // kürzere Zeit = besser
+      format: zeitText, // Topliste im Dialog als mm:ss anzeigen
       neustart: neuesSpiel,
     });
     // Endet der Dialog (Knopf oder Esc), zeigen Seite und HUD die neue Topliste
@@ -506,7 +518,7 @@ function verloren(treffer) {
       if (treffer.includes(i)) knopf.classList.add("getroffen");
       zelleBeschriften(i, "Mine");
     } else if (!istMine && z.flaggen[i]) {
-      knopf.classList.add("falsch");             // Flagge auf sicherem Feld
+      knopf.classList.add("falsch"); // Flagge auf sicherem Feld
       zelleBeschriften(i, "falsche Flagge");
     }
   });
@@ -515,7 +527,9 @@ function verloren(treffer) {
   // damit sie beim nächsten Verlieren erneut abspielen kann.
   if (!bewegungReduziert()) {
     el.feld.classList.add("schuettel");
-    el.feld.addEventListener("animationend", () => el.feld.classList.remove("schuettel"), { once: true });
+    el.feld.addEventListener("animationend", () => el.feld.classList.remove("schuettel"), {
+      once: true,
+    });
   }
   statusSagen("Mine getroffen. Verloren.");
 
@@ -549,7 +563,7 @@ function beiDialogEnde(dialog, aktion) {
  * Werte kommen zwar von uns, aber so bleibt es eine sichere Gewohnheit.
  */
 function schlankerDialog({ titel, gross, text, neustart }) {
-  document.getElementById("spiel-dialog")?.remove();   // evtl. alten Dialog entfernen
+  document.getElementById("spiel-dialog")?.remove(); // evtl. alten Dialog entfernen
 
   const dialog = document.createElement("dialog");
   dialog.className = "spiel-dialog";
@@ -572,7 +586,7 @@ function schlankerDialog({ titel, gross, text, neustart }) {
   const uebersicht = document.createElement("a");
   uebersicht.className = "knopf";
   uebersicht.href = "./";
-  uebersicht.style.display = "none";   // Einzel-Repo: keine Spieleübersicht
+  uebersicht.style.display = "none"; // Einzel-Repo: keine Spieleübersicht
   uebersicht.textContent = "Zur Übersicht";
   aktionen.append(nochmal, uebersicht);
 
@@ -630,7 +644,7 @@ function eingabeEinrichten() {
     druckTimer = setTimeout(() => {
       langerDruckAusgeloest = true;
       flaggeUmschalten(index);
-      navigator.vibrate?.(15);                     // kurzes Haptik-Feedback, wo es das gibt
+      navigator.vibrate?.(15); // kurzes Haptik-Feedback, wo es das gibt
     }, LANGER_DRUCK_MS);
   });
 
@@ -643,7 +657,10 @@ function eingabeEinrichten() {
     }
   });
   for (const name of ["pointerup", "pointercancel", "pointerleave"]) {
-    feld.addEventListener(name, () => { clearTimeout(druckTimer); druckTimer = null; });
+    feld.addEventListener(name, () => {
+      clearTimeout(druckTimer);
+      druckTimer = null;
+    });
   }
 
   /* --- Klick: Aufdecken bzw. Chording ---------------------------- */
@@ -700,20 +717,28 @@ function eingabeEinrichten() {
     let y = Math.floor(index / sp);
 
     switch (e.key) {
-      case "ArrowLeft":  x--; break;
-      case "ArrowRight": x++; break;
-      case "ArrowUp":    y--; break;
-      case "ArrowDown":  y++; break;
+      case "ArrowLeft":
+        x--;
+        break;
+      case "ArrowRight":
+        x++;
+        break;
+      case "ArrowUp":
+        y--;
+        break;
+      case "ArrowDown":
+        y++;
+        break;
       case "f":
       case "F":
         e.preventDefault();
         flaggeUmschalten(index);
         return;
       default:
-        return;                                   // alles andere nicht anfassen
+        return; // alles andere nicht anfassen
     }
-    e.preventDefault();                           // Pfeile sollen die Seite nicht scrollen
-    x = Math.max(0, Math.min(sp - 1, x));         // am Rand stehen bleiben
+    e.preventDefault(); // Pfeile sollen die Seite nicht scrollen
+    x = Math.max(0, Math.min(sp - 1, x)); // am Rand stehen bleiben
     y = Math.max(0, Math.min(z.stufe.zeilen - 1, y));
     fokusSetzen(y * sp + x, true);
   });
@@ -739,9 +764,9 @@ function stufenKnoepfeAktualisieren() {
 function stufeWaehlen(neueStufe) {
   if (!STUFEN[neueStufe] || neueStufe === stufeKey) return;
   stufeKey = neueStufe;
-  speichere(SPIEL, "stufe", stufeKey);       // beim nächsten Besuch wieder da
+  speichere(SPIEL, "stufe", stufeKey); // beim nächsten Besuch wieder da
   stufenKnoepfeAktualisieren();
-  neuesSpiel();                              // rendert auch HUD und Topliste der neuen Stufe neu
+  neuesSpiel(); // rendert auch HUD und Topliste der neuen Stufe neu
 }
 
 function init() {

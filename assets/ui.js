@@ -12,7 +12,14 @@
      import { gameOverDialog } from "./assets/ui.js";
    ============================================================ */
 
-import { topliste, waereInTopliste, inToplisteEintragen, initialenAendern, lade, speichere } from "./storage.js";
+import {
+  topliste,
+  waereInTopliste,
+  inToplisteEintragen,
+  initialenAendern,
+  lade,
+  speichere,
+} from "./storage.js";
 import { spruchFuer } from "./sprueche.js";
 
 /**
@@ -71,9 +78,14 @@ export function stillEintragen(spiel, punkte, richtung = "hoch") {
  * `formatierer` darf die Punktzahl hübsch machen (z. B. "12 Versuche").
  * `hervorhebenPlatz` (1–3) markiert einen frisch eingetragenen Platz dezent.
  */
-export function toplisteAnzeigen(container, spiel, formatierer = (p) => String(p), hervorhebenPlatz = null) {
+export function toplisteAnzeigen(
+  container,
+  spiel,
+  formatierer = (p) => String(p),
+  hervorhebenPlatz = null,
+) {
   const liste = topliste(spiel);
-  container.innerHTML = "";                       // alten Inhalt leeren
+  container.innerHTML = ""; // alten Inhalt leeren
   const ul = document.createElement("ul");
   ul.className = "topliste";
 
@@ -127,7 +139,15 @@ export function toplisteAnzeigen(container, spiel, formatierer = (p) => String(p
  * wegklickt, hat trotzdem seinen Eintrag.
  */
 export function gameOverDialog(optionen) {
-  const { spiel, titel = "GAME OVER", punkte, punkteText, richtung = "hoch", format, neustart } = optionen;
+  const {
+    spiel,
+    titel = "GAME OVER",
+    punkte,
+    punkteText,
+    richtung = "hoch",
+    format,
+    neustart,
+  } = optionen;
 
   // Gibt es den Dialog schon (vom letzten Mal)? Dann aufräumen.
   document.getElementById("spiel-dialog")?.remove();
@@ -147,12 +167,16 @@ export function gameOverDialog(optionen) {
     <p class="gross"></p>
     <p class="spruch" hidden></p>
     <div class="topliste-halter"></div>
-    ${platz ? `
+    ${
+      platz
+        ? `
       <p class="initialen-zeile">Eingetragen als
         <input class="initialen klein" maxlength="3" autocomplete="off"
                spellcheck="false" aria-label="Initialen ändern (3 Zeichen)">
       </p>
-    ` : ""}
+    `
+        : ""
+    }
     <div class="aktionen">
       <button class="knopf primaer" data-rolle="nochmal">Nochmal</button>
       

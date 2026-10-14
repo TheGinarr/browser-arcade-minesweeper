@@ -61,7 +61,9 @@ export function speichere(spiel, schluessel, wert) {
 export function entferne(spiel, schluessel) {
   try {
     localStorage.removeItem(vollerSchluessel(spiel, schluessel));
-  } catch { /* bewusst ignoriert */ }
+  } catch {
+    /* bewusst ignoriert */
+  }
 }
 
 /**
@@ -78,7 +80,9 @@ export function spielZuruecksetzen(spiel) {
         localStorage.removeItem(key);
       }
     }
-  } catch { /* bewusst ignoriert */ }
+  } catch {
+    /* bewusst ignoriert */
+  }
 }
 
 /* ------------------------------------------------------------
@@ -106,8 +110,8 @@ export function topliste(spiel) {
  */
 export function waereInTopliste(spiel, punkte, richtung = "hoch") {
   const liste = topliste(spiel);
-  if (liste.length < TOPLISTE_GROESSE) return true;        // noch Platz frei
-  const schlechtester = liste[liste.length - 1].punkte;    // Platz 3
+  if (liste.length < TOPLISTE_GROESSE) return true; // noch Platz frei
+  const schlechtester = liste[liste.length - 1].punkte; // Platz 3
   return richtung === "hoch" ? punkte > schlechtester : punkte < schlechtester;
 }
 
@@ -118,14 +122,18 @@ export function waereInTopliste(spiel, punkte, richtung = "hoch") {
  */
 export function inToplisteEintragen(spiel, initialen, punkte, richtung = "hoch") {
   // Initialen säubern: max. 3 Zeichen, Großbuchstaben, Fallback "???"
-  const sauber = String(initialen || "").toUpperCase().replace(/[^A-Z0-9ÄÖÜ]/g, "").slice(0, 3) || "???";
+  const sauber =
+    String(initialen || "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9ÄÖÜ]/g, "")
+      .slice(0, 3) || "???";
 
   const liste = topliste(spiel);
   const eintrag = { initialen: sauber, punkte, datum: new Date().toISOString().slice(0, 10) };
   liste.push(eintrag);
 
   // Sortieren: bei "hoch" absteigend, bei "runter" aufsteigend
-  liste.sort((a, b) => richtung === "hoch" ? b.punkte - a.punkte : a.punkte - b.punkte);
+  liste.sort((a, b) => (richtung === "hoch" ? b.punkte - a.punkte : a.punkte - b.punkte));
   const gekuerzt = liste.slice(0, TOPLISTE_GROESSE);
   speichere(spiel, TOPLISTE_SCHLUESSEL, gekuerzt);
 
@@ -143,6 +151,10 @@ export function initialenAendern(spiel, platz, initialen) {
   const liste = topliste(spiel);
   const eintrag = liste[platz - 1];
   if (!eintrag) return;
-  eintrag.initialen = String(initialen || "").toUpperCase().replace(/[^A-Z0-9ÄÖÜ]/g, "").slice(0, 3) || "???";
+  eintrag.initialen =
+    String(initialen || "")
+      .toUpperCase()
+      .replace(/[^A-Z0-9ÄÖÜ]/g, "")
+      .slice(0, 3) || "???";
   speichere(spiel, TOPLISTE_SCHLUESSEL, liste);
 }

@@ -25,6 +25,12 @@ Oder den Ordner auf einen statischen Hoster laden (GitHub Pages, Netlify, eigene
 - `assets/` – gemeinsame Bausteine (Design, Speicher, Dialoge) und lokale Schriften
 - `impressum.html`, `datenschutz.html` – **Vorlagen** mit Platzhaltern in eckigen Klammern, vor dem Veröffentlichen ausfüllen (keine Rechtsberatung)
 
+## Code-Stil
+
+Der Code ist mit [Prettier](https://prettier.io) formatiert (Einstellungen in `.prettierrc.json`,
+Editor-Grundlagen in `.editorconfig`): 2 Leerzeichen Einrückung, eine CSS-Regel pro Zeile,
+höchstens 100 Zeichen pro Zeile. Vor einem Commit einfach `npx prettier --write .` ausführen.
+
 ## Lizenz
 
 Code: MIT (`LICENSE`). Schriften: SIL Open Font License 1.1 (`assets/fonts/OFL-LIZENZ.txt`).
