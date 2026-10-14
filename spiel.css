@@ -1,0 +1,139 @@
+/* ============================================================
+   Minensucher · spielspezifische Styles
+   ------------------------------------------------------------
+   Das gemeinsame Design (Farben, HUD, Knöpfe, Dialog) kommt aus
+   ../assets/style.css. Hier liegt nur, was dieses Spiel allein
+   braucht: Schwierigkeits-Leiste, Zellen, Zahlenfarben, Flagge, Mine.
+
+   Alles Gezeichnete (Flagge, Mine) entsteht aus CSS-Formen auf den
+   Pseudo-Elementen ::before/::after. So braucht das Spiel weder
+   Bilder noch Schriftzeichen, die auf jedem Gerät anders aussehen.
+   ============================================================ */
+
+/* Für Bildschirmleser sichtbar, für Augen unsichtbar (Live-Region) */
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- Schwierigkeits-Leiste ----------------------------- */
+.stufen-leiste{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 14px}
+.stufen-leiste .knopf{padding:9px 16px;line-height:1.25;text-align:left}
+.stufen-leiste .knopf small{display:block;margin-top:2px;font-weight:400;font-size:.72rem;color:var(--mut)}
+/* Aktive Stufe: per aria-pressed gestylt, so bleiben Optik und
+   Barrierefreiheit immer synchron (ein Attribut, zwei Aufgaben). */
+.stufen-leiste .knopf[aria-pressed="true"]{
+  border-color:var(--ak);color:var(--ak);
+  box-shadow:0 0 16px color-mix(in srgb,var(--ak) 30%,transparent);
+}
+.stufen-leiste .knopf[aria-pressed="true"] small{color:inherit;opacity:.8}
+.stufen-leiste #neues-spiel{margin-left:auto;padding:12px 20px}
+
+/* ---------- Bühne: Feld darf seitlich scrollen ----------------
+   Auf dem Handy ist 30×16 breiter als der Bildschirm. Statt die
+   Zellen winzig zu machen, scrollt die Bühne horizontal.
+   overflow-y:hidden verhindert, dass die Schüttel-Animation kurz
+   einen senkrechten Scrollbalken aufblitzen lässt. */
+.buehne{overflow-x:auto;overflow-y:hidden}
+
+/* ---------- Das Spielfeld als CSS-Grid ------------------------
+   --spalten setzt game.js (9, 16 oder 30), --zelle ist die Kantenlänge.
+   clamp(min, bevorzugt, max): wächst mit der Bildschirmbreite (vw),
+   bleibt aber zwischen Mindest- (Daumen-tauglich) und Höchstgröße. */
+.minenfeld{
+  --zelle:clamp(28px,8vw,44px);
+  display:grid;
+  grid-template-columns:repeat(var(--spalten,9),var(--zelle));
+  grid-auto-rows:var(--zelle);
+  gap:2px;
+  width:max-content;margin:0 auto;       /* zentriert, solange es passt */
+  /* Beim Spielen soll nichts markiert werden und kein iOS-Menü aufpoppen */
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
+}
+.minenfeld[data-stufe="mittel"]{--zelle:clamp(30px,5vw,38px)}
+.minenfeld[data-stufe="schwer"]{--zelle:clamp(28px,2.8vw,34px)}
+
+/* ---------- Eine Zelle (ein <button>) -------------------------
+   Zustände werden als Klassen gesetzt:
+     (keine)   verdeckt          .offen    aufgedeckt (Zahl 0–8)
+     .flagge   Flagge gesetzt    .mine     Mine (nach Niederlage/Sieg sichtbar)
+     .getroffen  die ausgelöste Mine    .falsch  Flagge auf einem sicheren Feld
+
+   Wichtig für die Wellen-Animation: Hintergrund, Farbe und Schatten
+   sind ÜBERGANGS-fähig (transition), Hintergrund-BILDER (Verläufe)
+   wären es nicht. Darum ist die 3D-Optik der verdeckten Zelle aus
+   background-color + inset-Schatten gebaut. --v ist die Verzögerung,
+   die game.js pro Zelle setzt (Abstand zum Klick). */
+.zelle{
+  position:relative;margin:0;padding:0;border:0;border-radius:4px;
+  font:700 calc(var(--zelle) * .5)/1 var(--mono);
+  color:transparent;                       /* Zahl erst nach dem Aufdecken sichtbar */
+  background-color:#202046;
+  box-shadow:inset 2px 2px 0 #ffffff1f,inset -2px -2px 0 #00000066;
+  cursor:pointer;
+  touch-action:manipulation;               /* kein Doppeltipp-Zoom, Scrollen bleibt möglich */
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .25s ease,color .25s ease,box-shadow .25s ease;
+  transition-delay:var(--v,0ms);
+}
+/* Hover nur bei echter Maus (auf dem Handy bliebe er nach dem Tippen "hängen") */
+@media (hover:hover){.zelle:hover:not(.offen):not(.mine){background-color:#2c2c5c}}
+/* Tastaturfokus gut sichtbar; negativer Abstand, damit der Rahmen
+   nicht vom scrollenden Container abgeschnitten wird */
+.zelle:focus-visible{outline:2px solid var(--ak);outline-offset:-2px;z-index:1}
+
+.zelle.offen,.zelle.mine{
+  background-color:#0b0b19;
+  box-shadow:inset 0 0 0 1px #1a1a36;
+  cursor:default;
+}
+
+/* Zahlenfarben 1–8: Neon-Palette, auf dunklem Grund klar unterscheidbar
+   (blau, grün, rot, violett, orange, cyan, gelb, hellgrau) */
+.zelle.offen[data-zahl="1"]{color:#4db8ff}
+.zelle.offen[data-zahl="2"]{color:#5dff8a}
+.zelle.offen[data-zahl="3"]{color:#ff4d6d}
+.zelle.offen[data-zahl="4"]{color:#b28dff}
+.zelle.offen[data-zahl="5"]{color:#ff9a3d}
+.zelle.offen[data-zahl="6"]{color:#00e5ff}
+.zelle.offen[data-zahl="7"]{color:#ffe14d}
+.zelle.offen[data-zahl="8"]{color:#e4e6ff}
+.zelle.offen[data-zahl]{text-shadow:0 0 8px currentColor}
+
+/* ---------- Flagge: Mast (::after) + Fähnchen (::before) ------- */
+.zelle.flagge::before{
+  content:"";position:absolute;left:32%;top:20%;width:42%;height:32%;
+  background:var(--pink);
+  clip-path:polygon(0 0,100% 50%,0 100%);   /* Dreieck aus einem Rechteck schneiden */
+  filter:drop-shadow(0 0 4px var(--pink));
+}
+.zelle.flagge::after{
+  content:"";position:absolute;left:28%;top:20%;width:6%;height:58%;
+  background:var(--txt);border-radius:1px;
+}
+/* Flagge auf sicherem Feld (nach Niederlage): rosa Rahmen als "Falsch!" */
+.zelle.falsch{box-shadow:inset 0 0 0 2px var(--pink);background-color:#2a0e1c}
+
+/* ---------- Mine: Kreis (::before) + Kreuz (::after) ----------- */
+.zelle.mine::before{
+  content:"";position:absolute;inset:27%;border-radius:50%;background:var(--txt);
+}
+.zelle.mine::after{
+  content:"";position:absolute;inset:14%;
+  background:
+    linear-gradient(var(--txt),var(--txt)) center/100% 10% no-repeat,
+    linear-gradient(var(--txt),var(--txt)) center/10% 100% no-repeat;
+}
+/* Die ausgelöste Mine leuchtet rot */
+.zelle.getroffen{
+  background-color:#b3123f;
+  box-shadow:0 0 16px #ff2d78aa,inset 0 0 0 1px #ff6d98;
+}
+
+/* ---------- Dialog: die große Zeit in Akzentfarbe ---------------- */
+dialog.spiel-dialog p.gross{color:var(--ak);text-shadow:0 0 14px color-mix(in srgb,var(--ak) 50%,transparent)}
+
+/* ---------- Schmale Handys: HUD in einer Zeile halten ---------- */
+@media (max-width:480px){
+  .hud{gap:8px}
+  .hud-feld{flex:1 1 0;min-width:0;padding:10px 6px}
+  .hud-feld .label{font-size:.6rem;letter-spacing:.06em}
+  .hud-feld .wert{font-size:.85rem}
+}

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07070f">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/style.css">
+  <!-- Spielspezifische Styles (Zellen, Zahlenfarben, Flagge, Mine) -->
+  <link rel="stylesheet" href="./spiel.css">
+  <title>Minesweeper · Browser-Arcade</title>
+  <meta name="description" content="Minesweeper im Browser: Decke alle sicheren Felder auf, markiere Minen mit Flaggen und spiele auf drei Schwierigkeitsstufen um die beste Zeit.">
+</head>
+<body style="--ak:var(--cyan)">
+  <div class="raster" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+  <header class="kopf"><nav class="container nav" aria-label="Hauptnavigation">
+    <a class="marke" href="./"><span class="logo">▶</span>GAMES</a>
+    <div class="nav-links"><a href="./impressum.html">Impressum</a><a href="./datenschutz.html">Datenschutz</a></div>
+  </nav></header>
+  <main id="main" class="container">
+    <div class="spiel-kopf"><div><h1>MINESWEEPER</h1><p class="unterzeile">Decke alle sicheren Felder auf, ohne auf eine Mine zu treten.</p></div></div>
+    <div class="hud">
+      <div class="hud-feld"><div class="label">Restminen</div><div class="wert" id="hud-minen">10</div></div>
+      <div class="hud-feld"><div class="label">Zeit</div><div class="wert" id="hud-zeit">00:00</div></div>
+      <div class="hud-feld"><div class="label">Bestzeit</div><div class="wert" id="hud-best">--:--</div></div>
+    </div>
+
+    <!-- Schwierigkeit wählen: aria-pressed zeigt Screenreadern, welcher Knopf aktiv ist -->
+    <div class="stufen-leiste" role="group" aria-label="Schwierigkeit">
+      <button type="button" class="knopf" data-stufe="leicht" aria-pressed="true">Leicht <small>9×9 · 10 Minen</small></button>
+      <button type="button" class="knopf" data-stufe="mittel" aria-pressed="false">Mittel <small>16×16 · 40 Minen</small></button>
+      <button type="button" class="knopf" data-stufe="schwer" aria-pressed="false">Schwer <small>30×16 · 99 Minen</small></button>
+      <button type="button" class="knopf primaer" id="neues-spiel">Neues Spiel</button>
+    </div>
+
+    <div class="buehne">
+      <div class="minenfeld" id="feld" role="group" aria-label="Minenfeld"></div>
+    </div>
+    <!-- Unsichtbare Live-Region: Screenreader hören hier Sieg/Niederlage -->
+    <p class="sr-only" id="status" role="status" aria-live="polite"></p>
+
+    <p class="steuerung">
+      Maus: <kbd>Linksklick</kbd> deckt auf, <kbd>Rechtsklick</kbd> setzt eine Flagge, <kbd>Doppelklick</kbd> auf eine Zahl deckt die Nachbarn auf (Chording).
+      Touch: Tippen deckt auf, langes Drücken setzt eine Flagge.
+      Tastatur: <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> bewegen, <kbd>Enter</kbd> oder <kbd>Leertaste</kbd> deckt auf (auf einer Zahl: Chording), <kbd>F</kbd> setzt eine Flagge.
+    </p>
+
+    <section style="max-width:420px;margin-top:36px"><h2 id="topliste-titel" style="font-family:var(--pixel);font-weight:400;font-size:.85rem">Lokale Top 3</h2><div id="topliste"></div>
+      <button class="knopf" id="reset" style="margin-top:10px">Spielstand zurücksetzen</button></section>
+
+    <section class="lernbox"><details open><summary>Anleitung &amp; Regeln</summary>
+      <p><strong>Ziel:</strong> Decke alle Felder ohne Mine auf – so schnell wie möglich.</p>
+      <ul>
+        <li>Eine aufgedeckte Zahl sagt, wie viele der 8 Nachbarfelder eine Mine enthalten.</li>
+        <li>Rechtsklick (am Handy: lange drücken) setzt eine Flagge auf vermutete Minen.</li>
+        <li>Der erste Klick ist immer sicher – die Minen werden erst danach verteilt.</li>
+        <li>Doppelklick auf eine Zahl deckt die restlichen Nachbarn auf, wenn genug Flaggen daneben stehen (Chording).</li>
+        <li>Gewonnen ist, wenn alle minenfreien Felder offen sind; die Bestzeit zählt pro Schwierigkeit.</li>
+      </ul>
+    </details></section>
+
+    <section class="lernbox"><details><summary>Wie funktioniert der Code?</summary>
+      <ul>
+        <li><strong>Fairer erster Klick:</strong> Die Minen werden erst <em>nach</em> dem ersten Klick verteilt (<code>minenVerteilen</code>). Das angeklickte Feld und seine Nachbarn bleiben minenfrei. So kann niemand im ersten Zug verlieren, und der erste Klick öffnet meist gleich eine Fläche, mit der man weiterrechnen kann. Verteilt wird mit einem „Teil-Mischen“ (Fisher-Yates): Aus der Liste erlaubter Felder werden zufällig so viele nach vorne getauscht, wie es Minen gibt.</li>
+        <li><strong>Flaches Array statt Tabelle:</strong> Das Feld ist nur eine Liste. Aus Spalte <code>x</code> und Zeile <code>y</code> wird der Index <code>y * spalten + x</code>, zurück geht es mit <code>%</code> (Rest) und <code>Math.floor</code> (Division). Die Hilfsfunktion <code>nachbarIndizes</code> liefert die bis zu 8 Nachbarn und prüft dabei die Ränder.</li>
+        <li><strong>Flood-Fill mit Stack:</strong> Trifft man ein Feld ohne Nachbarminen, öffnen sich automatisch alle angrenzenden Felder. <code>floodFill</code> arbeitet dafür mit einer Schleife und einem Stapel (<code>push</code>/<code>pop</code>) statt mit Rekursion. Eine rekursive Funktion würde bei großen Flächen (30×16 = 480 Felder) sehr tief verschachtelte Aufrufe erzeugen und könnte den Aufrufstapel des Browsers sprengen („Stack Overflow“).</li>
+        <li><strong>Chording:</strong> Doppelklick auf eine aufgedeckte Zahl: Stehen rund um das Feld genau so viele Flaggen, wie die Zahl sagt, werden alle übrigen Nachbarn auf einmal aufgedeckt (<code>chordingKandidaten</code>). Das spart viele Klicks, ist aber riskant: Stimmt eine Flagge nicht, trifft man dabei eine Mine.</li>
+        <li><strong>Eine Eingabe-Schaltzentrale:</strong> Statt 480 Klick-Handler gibt es nur einen am Feld (<code>Event Delegation</code>). <code>e.target.closest(".zelle")</code> findet die angeklickte Zelle. Rechtsklick läuft über <code>contextmenu</code>, am Handy erkennt ein Timer (<code>setTimeout</code> ca. 400 ms) das lange Drücken und die <em>Pointer Events</em> unterscheiden Maus und Touch.</li>
+        <li><strong>Animierte Wellen:</strong> Beim Aufdecken bekommt jede Zelle per <code>style.setProperty("--v", …)</code> eine Verzögerung, die vom Abstand zum Klick abhängt. Das CSS nutzt sie als <code>transition-delay</code>, dadurch läuft die Aufdeck-Welle gestaffelt über das Feld, ganz ohne JavaScript-Animationsschleife.</li>
+      </ul>
+    </details></section>
+  </main>
+  <footer class="fuss"><div class="container fuss-in"><span>Browser-Arcade · Open Source</span><nav aria-label="Rechtliches"><a href="./impressum.html">Impressum</a><a href="./datenschutz.html">Datenschutz</a></nav></div></footer>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
