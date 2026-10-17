@@ -33,5 +33,5 @@ höchstens 100 Zeichen pro Zeile. Vor einem Commit einfach `npx prettier --write
 
 ## Lizenz
 
-Code: MIT (`LICENSE`). Schriften: SIL Open Font License 1.1 (`assets/fonts/OFL-LIZENZ.txt`).
+Code: MIT (`LICENSE`). Schriften: SIL Open Font License 1.1 (Press Start 2P und IBM Plex, `assets/fonts/OFL-LIZENZ.txt`).
 Alle Grafiken entstehen im Code, ohne fremde Bilddateien.
